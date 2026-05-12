@@ -1,0 +1,7 @@
+{
+  "llm.choice-provider": [
+    "GOOGLE",
+    "MINIMAX",
+    "DEEP_SEEK"
+  ]
+}

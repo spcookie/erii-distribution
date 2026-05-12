@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# IDE
+.idea/
+
+# Claude Code
+.claude/
+
+# Local npm registry
+.verdaccio/
+
+# Build output
+dist/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment
+.env
+.env.*
+
+# Test directories
+test3/
+
+# OS files
+.DS_Store
+Thumbs.db

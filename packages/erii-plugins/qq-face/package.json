@@ -1,0 +1,12 @@
+{
+  "name": "@spcookie/erii-plugin-qq-face",
+  "version": "1.0.0",
+  "description": "Erii QQ Face plugin",
+  "scripts": {
+    "postinstall": "node postinstall.js"
+  },
+  "files": [
+    "*.zip",
+    "postinstall.js"
+  ]
+}

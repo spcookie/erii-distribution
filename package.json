@@ -1,0 +1,16 @@
+{
+  "name": "erii-distribution",
+  "private": true,
+  "workspaces": [
+    "packages/create-erii",
+    "packages/erii",
+    "packages/erii-browser",
+    "packages/erii-cli/*/*",
+    "packages/erii-config",
+    "packages/erii-core",
+    "packages/erii-deps",
+    "packages/erii-plugins/*",
+    "packages/erii-runtime/*/*",
+    "packages/erii-setup"
+  ]
+}

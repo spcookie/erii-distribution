@@ -1,0 +1,11 @@
+{
+  "name": "@spcookie/create-erii",
+  "version": "1.0.3",
+  "description": "Bootstrap an Erii project — one command to get started",
+  "bin": {
+    "create-erii": "./init.js"
+  },
+  "files": [
+    "init.js"
+  ]
+}

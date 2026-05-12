@@ -1,0 +1,12 @@
+{
+  "name": "@spcookie/erii-plugin-speech",
+  "version": "1.0.0",
+  "description": "Erii Speech plugin",
+  "scripts": {
+    "postinstall": "node postinstall.js"
+  },
+  "files": [
+    "*.zip",
+    "postinstall.js"
+  ]
+}
