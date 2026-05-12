@@ -1,4 +1,3 @@
-# @spcookie/erii-plugin-speech
+# speech
 
-Erii Speech plugin.
-
+MiniMax TTS语音合成插件

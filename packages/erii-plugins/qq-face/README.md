@@ -1,4 +1,3 @@
-# @spcookie/erii-plugin-qq-face
+# qq-face
 
-Erii QQ Face plugin.
-
+QQ表情匹配插件

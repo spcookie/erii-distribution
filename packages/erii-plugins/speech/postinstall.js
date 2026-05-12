@@ -1,11 +1,12 @@
 const fs = require('fs');
 const path = require('path');
 
+const pkg = require('./package.json');
 const isWindows = process.platform === 'win32';
 const spcookieFlat = path.resolve(__dirname, '..');
 const projectRoot = path.resolve(spcookieFlat, '..', '..');
 
-const TAG = '[erii-plugin-speech]';
+const TAG = `[${pkg.name}]`;
 
 function main() {
   const zipFiles = fs.readdirSync(__dirname).filter(f => f.endsWith('.zip'));
