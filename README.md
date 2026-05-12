@@ -1,4 +1,4 @@
-# ERII Distribution
+# Erii Distribution
 
 npm monorepo for distributing [ERII](https://github.com/spcookie/erii) — a Kotlin/JVM-based AI agent framework.
 
