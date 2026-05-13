@@ -279,9 +279,14 @@ function createFileLink(target, linkPath) {
     return 'created';
   }
 
-  // Windows: try hardlink first, fallback to copy
+  // Windows: hardlink (same volume) → symlink (cross-volume, needs dev mode) → copy
   try {
     fs.linkSync(target, linkPath);
+    return 'created';
+  } catch {
+  }
+  try {
+    fs.symlinkSync(target, linkPath, 'file');
     return 'created';
   } catch {
     try {
@@ -294,33 +299,33 @@ function createFileLink(target, linkPath) {
   }
 }
 
-// ---- lib/ merge ----
+// ---- lib/ merge (symlink per package directory) ----
+
+const libMap = {
+  'erii-browser': 'browser',
+  'erii-core': 'core',
+  'erii-deps': 'deps',
+};
 
 function mergeLib(linkRoot) {
-  const targetLib = path.join(linkRoot, 'lib');
-  fs.mkdirSync(targetLib, { recursive: true });
-
-  const srcNames = ['erii-core', 'erii-browser', 'erii-deps'];
+  const libRoot = path.join(linkRoot, 'lib');
+  fs.mkdirSync(libRoot, {recursive: true});
 
   let total = 0;
-  for (const name of srcNames) {
-    const pkgDir = findPkgDir(name);
+  for (const [pkg, subdir] of Object.entries(libMap)) {
+    const pkgDir = findPkgDir(pkg);
     if (!pkgDir) {
-      log('warn', `lib source missing: ${name}`);
+      log('warn', `lib source missing: ${pkg}`);
       continue;
     }
-    const src = path.join(pkgDir, 'lib');
-    if (!fs.existsSync(src)) continue;
-    const jars = fs.readdirSync(src).filter(f => f.endsWith('.jar'));
-    for (const jar of jars) {
-      const srcFile = path.join(src, jar);
-      const dstFile = path.join(targetLib, jar);
-      if (fs.existsSync(dstFile)) continue;
-      const r = createFileLink(srcFile, dstFile);
-      if (r === 'created') total++;
-    }
+    const srcLib = path.join(pkgDir, 'lib');
+    if (!fs.existsSync(srcLib)) continue;
+
+    const dstDir = path.join(libRoot, subdir);
+    const r = createDirLink(srcLib, dstDir);
+    if (r === 'created') total++;
   }
-  log('info', `lib/: ${total} JARs linked`);
+  log('info', `lib/: ${total} dirs linked`);
   return total > 0;
 }
 
@@ -433,7 +438,6 @@ function main() {
   // the "cleanup" command. We deliberately do NOT link the binary directly,
   // as a raw .exe would bypass cli.js on Windows.
   const configDir = findPkgDir('erii-config');
-  const depsDir = findPkgDir('erii-deps');
 
   // .conf & conf: copy + merge instead of symlink (preserve user edits, add new keys only)
   const confSrc = path.join(configDir, '.conf');
@@ -455,7 +459,6 @@ function main() {
   }
 
   const links = [
-    { name: 'bin',     type: 'dir',  target: path.join(depsDir, 'bin'),      link: path.join(linkRoot, 'bin') },
     { name: 'runtime', type: 'dir',  target: jdkPath,                        link: path.join(linkRoot, 'runtime') },
   ];
 

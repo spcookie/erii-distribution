@@ -46,8 +46,7 @@ async function main() {
   execSync('npm install ' + pkg + registryArg, {cwd: projectDir, stdio: 'inherit'});
 
   console.log('\nDone! Run the following to get started:\n');
-  console.log('  cd ' + projectName);
-  console.log('  npx erii');
+  console.log('  cd ' + projectName + ' & npx erii setup');
 }
 
 main().catch((err) => {
