@@ -88,7 +88,7 @@ if (process.argv[2] === 'server') {
   }
 
   const child = spawn(java, args, {cwd: projectRoot, stdio: 'inherit', env});
-  child.on('exit', (code) => process.exit(code || 0));
+  child.unref();
   return;
 }
 
@@ -114,4 +114,4 @@ if (!cliDir) {
 const binary = path.join(cliDir, isWindows ? 'erii-cli.exe' : 'erii-cli');
 
 const child = spawn(binary, process.argv.slice(2), { stdio: 'inherit' });
-child.on('exit', (code) => process.exit(code || 0));
+child.unref();
