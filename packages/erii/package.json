@@ -1,6 +1,6 @@
 {
   "name": "@spcookie/erii",
-  "version": "1.0.9",
+  "version": "1.0.0",
   "description": "Erii distribution - all platforms",
   "bin": {
     "erii": "cli.js"
