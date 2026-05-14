@@ -1,7 +1,9 @@
 {
   "name": "@spcookie/erii-config",
   "version": "1.0.0",
-  "scripts": {},
+  "scripts": {
+    "postinstall": "node postinstall.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

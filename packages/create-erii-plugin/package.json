@@ -1,0 +1,12 @@
+{
+  "name": "@spcookie/create-erii-plugin",
+  "version": "1.0.0",
+  "description": "Scaffold an Erii plugin distribution package",
+  "bin": {
+    "create-erii-plugin": "./init.js"
+  },
+  "files": [
+    "init.js",
+    "postinstall.template.js"
+  ]
+}

@@ -7,5 +7,4 @@
 -XX:HeapDumpPath=./erii/oom_heap.hprof
 -Dfile.encoding=UTF-8
 -Duser.timezone=Asia/Shanghai
---add-opens
-java.base/java.lang=ALL-UNNAMED
+--add-opens java.base/java.lang=ALL-UNNAMED

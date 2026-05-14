@@ -57,16 +57,16 @@ function createDirLink(target, linkPath) {
 }
 
 function main() {
-  const zipFiles = fs.readdirSync(__dirname).filter(f => f.endsWith('.zip'));
-  if (zipFiles.length === 0) {
-    console.log(TAG, 'No .zip found in package, skipping.');
-    return;
-  }
-  if (zipFiles.length > 1) {
-    console.log(TAG, 'WARN: multiple .zip files found, using first:', zipFiles[0]);
-  }
+    const zipFiles = fs.readdirSync(__dirname).filter(f => f.endsWith('.zip'));
+    if (zipFiles.length === 0) {
+        console.log(TAG, 'No .zip found in package, skipping.');
+        return;
+    }
+    if (zipFiles.length > 1) {
+        console.log(TAG, 'WARN: multiple .zip files found, using first:', zipFiles[0]);
+    }
 
-  const zipName = zipFiles[0];
+    const zipName = zipFiles[0];
     const zipPath = path.join(__dirname, zipName);
     const zipBase = zipName.replace(/\.zip$/, '');
     const pluginDir = path.join(__dirname, zipBase);
@@ -104,8 +104,8 @@ function main() {
     }
 
     // Link to plugins/
-  const pluginsDir = path.join(projectRoot, 'plugins');
-  fs.mkdirSync(pluginsDir, { recursive: true });
+    const pluginsDir = path.join(projectRoot, 'plugins');
+    fs.mkdirSync(pluginsDir, {recursive: true});
 
     const linkName = path.basename(pluginDir);
     const linkPath = path.join(pluginsDir, linkName);

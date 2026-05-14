@@ -88,7 +88,8 @@ if (process.argv[2] === 'server') {
   }
 
   const child = spawn(java, args, {cwd: projectRoot, stdio: 'inherit', env});
-  child.unref();
+  forwardSignals(child);
+  child.on('exit', (code) => process.exit(code || 0));
   return;
 }
 
@@ -114,4 +115,19 @@ if (!cliDir) {
 const binary = path.join(cliDir, isWindows ? 'erii-cli.exe' : 'erii-cli');
 
 const child = spawn(binary, process.argv.slice(2), { stdio: 'inherit' });
-child.unref();
+forwardSignals(child);
+child.on('exit', (code) => process.exit(code || 0));
+
+function forwardSignals(child) {
+  const signals = isWindows
+      ? ['SIGINT', 'SIGBREAK']
+      : ['SIGINT', 'SIGTERM', 'SIGHUP', 'SIGUSR1', 'SIGUSR2'];
+  for (const sig of signals) {
+    process.on(sig, () => {
+      try {
+        child.kill(isWindows ? 'SIGTERM' : sig);
+      } catch {
+      }
+    });
+  }
+}
