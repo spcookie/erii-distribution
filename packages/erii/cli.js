@@ -6,10 +6,41 @@ const fs = require('fs');
 const spcookieFlat = path.resolve(__dirname, '..');
 const spcookieNested = path.join(__dirname, 'node_modules', '@spcookie');
 const isWindows = process.platform === 'win32';
-
-// Detect install layout (mirrors postinstall.js logic)
 const nestedExists = fs.existsSync(spcookieNested);
-const projectRoot = nestedExists ? __dirname : path.resolve(spcookieFlat, '..', '..');
+
+function findEriiDir() {
+  for (const searchDir of [spcookieFlat, spcookieNested]) {
+    const candidate = path.join(searchDir, 'erii');
+    if (fs.existsSync(path.join(candidate, 'package.json'))) {
+      return candidate;
+    }
+  }
+  return null;
+}
+
+const eriiDir = findEriiDir();
+
+function isLocalInstall() {
+  if (!eriiDir) return false;
+  let dir = process.cwd();
+  while (true) {
+    const expected = path.join(dir, 'node_modules', '@spcookie', 'erii');
+    if (eriiDir === expected || eriiDir.startsWith(expected + path.sep)) {
+      return true;
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) break;
+    dir = parent;
+  }
+  return false;
+}
+
+const localInstall = isLocalInstall();
+
+// Global: converge into @spcookie/erii/; Local: use project root (parent of node_modules)
+const projectRoot = localInstall
+    ? (nestedExists ? __dirname : path.resolve(spcookieFlat, '..', '..'))
+    : (eriiDir || (nestedExists ? __dirname : path.resolve(spcookieFlat, '..', '..')));
 
 function findPkgDir(name) {
   const flat = path.join(spcookieFlat, name);
@@ -76,7 +107,33 @@ if (process.argv[2] === 'server') {
     java = path.join(process.env.JAVA_HOME, 'bin', isWindows ? 'java.exe' : 'java');
   }
 
-  const args = [...javaOpts, ...eriiCoreOpts, '-cp', cp, 'io.ktor.server.netty.EngineMain', ...process.argv.slice(3)];
+  // Separate user -D system properties from program args
+  const userArgs = process.argv.slice(3);
+  const userSystemProps = [];
+  const userProgramArgs = [];
+  for (const arg of userArgs) {
+    if (arg.startsWith('-D')) {
+      userSystemProps.push(arg);
+    } else {
+      userProgramArgs.push(arg);
+    }
+  }
+
+  // Filter eriiCoreOpts to remove keys overridden by user
+  const userPropKeys = new Set(userSystemProps.map(arg => arg.split('=')[0]));
+  const filteredCoreOpts = eriiCoreOpts.filter(arg => {
+    if (!arg.startsWith('-D')) return true;
+    return !userPropKeys.has(arg.split('=')[0]);
+  });
+
+  const args = [
+    ...javaOpts,
+    ...userSystemProps,
+    ...filteredCoreOpts,
+    '-cp', cp,
+    'io.ktor.server.netty.EngineMain',
+    ...userProgramArgs,
+  ];
 
   // Windows: switch console to UTF-8 (code page 65001) before starting Java
   if (isWindows) {
@@ -112,7 +169,16 @@ if (!binary) {
   process.exit(1);
 }
 
-const child = spawn(binary, process.argv.slice(2), { stdio: 'inherit' });
+const cliArgs = process.argv.slice(2);
+
+// Global mode: switch cwd to @spcookie/erii so resolveDir finds everything
+// Local mode: keep user's cwd so resolveDir finds project-root .conf/conf/plugins
+const spawnOpts = {stdio: 'inherit'};
+if (eriiDir && !localInstall) {
+  spawnOpts.cwd = eriiDir;
+}
+
+const child = spawn(binary, cliArgs, spawnOpts);
 forwardSignals(child);
 child.on('exit', (code) => process.exit(code || 0));
 

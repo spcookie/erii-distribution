@@ -9,7 +9,31 @@ const isWindows = process.platform === 'win32';
 const spcookieFlat = path.resolve(__dirname, '..');
 const spcookieNested = path.join(__dirname, 'node_modules', '@spcookie');
 const nestedExists = fs.existsSync(spcookieNested);
-const projectRoot = nestedExists ? __dirname : path.resolve(spcookieFlat, '..', '..');
+
+function findEriiDir() {
+  const candidates = [
+    path.join(spcookieFlat, 'erii'),
+    path.join(__dirname, 'node_modules', '@spcookie', 'erii'),
+  ];
+  for (const candidate of candidates) {
+    if (fs.existsSync(path.join(candidate, 'package.json'))) {
+      return candidate;
+    }
+  }
+  return null;
+}
+
+const eriiDir = findEriiDir();
+const isGlobal = process.env.npm_config_global === 'true';
+
+function findProjectRoot() {
+  if (isGlobal && eriiDir) {
+    return eriiDir;
+  }
+  return nestedExists ? __dirname : path.resolve(spcookieFlat, '..', '..');
+}
+
+const projectRoot = findProjectRoot();
 
 const TAG = `[${pkg.name}]`;
 
