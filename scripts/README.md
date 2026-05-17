@@ -43,12 +43,13 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1
    npm install -g @spcookie/erii
    ```
 
-## 安装后
+4. **自动运行配置向导**
+   ```bash
+   erii setup
+   ```
+
+## 启动服务
 
 ```bash
-# 运行交互式配置向导
-erii setup
-
-# 启动服务
 erii server
 ```

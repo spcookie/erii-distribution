@@ -58,9 +58,12 @@ npm install -g @spcookie/erii
 
 echo -e "  ${GREEN}✓${NC} @spcookie/erii installed"
 
+# --- Run Setup ---
+echo -e "\n${YELLOW}[4/4] Running erii setup...${NC}"
+erii setup
+
 echo -e "\n${GREEN}========================================${NC}"
-echo -e "${GREEN}     Installation Complete!             ${NC}"
+echo -e "${GREEN}     Setup Complete!                    ${NC}"
 echo -e "${GREEN}========================================${NC}"
-echo -e "\nNext steps:"
-echo -e "  ${YELLOW}erii setup${NC}   → Run interactive setup"
-echo -e "  ${YELLOW}erii server${NC}  → Start the server"
+echo -e "\nStart the server with:"
+echo -e "  ${YELLOW}erii server${NC}"

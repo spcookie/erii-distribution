@@ -109,10 +109,12 @@ Write-Step "[3/3] Installing @spcookie/erii globally..."
 & npm install -g @spcookie/erii
 Write-Ok "@spcookie/erii installed"
 
+# --- Run Setup ---
+Write-Step "[4/4] Running erii setup..."
+& erii setup
+
 Write-Host "`n========================================" -ForegroundColor Green
-Write-Host "     Installation Complete!             " -ForegroundColor Green
+Write-Host "     Setup Complete!                    " -ForegroundColor Green
 Write-Host "========================================" -ForegroundColor Green
-Write-Host "`nNext steps:" -ForegroundColor White
-Write-Host "  erii setup       → Run interactive setup" -ForegroundColor Yellow
-Write-Host "  erii server      → Start the server" -ForegroundColor Yellow
-Write-Host "`nNote: You may need to restart your terminal for 'nvm' command to be available." -ForegroundColor DarkGray
+Write-Host "`nStart the server with:" -ForegroundColor White
+Write-Host "  erii server" -ForegroundColor Yellow
