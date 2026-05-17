@@ -47,6 +47,7 @@ async function main() {
 
   console.log('\nDone! Run the following to get started:\n');
   console.log('  cd ' + projectName + ' && npx erii setup');
+  console.log('  npx erii server');
 }
 
 main().catch((err) => {
