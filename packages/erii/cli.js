@@ -95,24 +95,22 @@ if (process.argv[2] === 'server') {
 
 // ---- proxy to CLI binary (all other commands) ----
 
-function findCliDir() {
+const binaryName = isWindows ? 'erii-cli.exe' : 'erii-cli';
+
+function findBinary() {
   for (const searchDir of [spcookieFlat, spcookieNested]) {
-    if (!fs.existsSync(searchDir)) continue;
-    const dirs = fs.readdirSync(searchDir);
-    const cliDir = dirs.find(d => /^erii-cli-/.test(d));
-    if (cliDir) return path.join(searchDir, cliDir);
+    const candidate = path.join(searchDir, binaryName);
+    if (fs.existsSync(candidate)) return candidate;
   }
   return null;
 }
 
-const cliDir = findCliDir();
+const binary = findBinary();
 
-if (!cliDir) {
-  console.error('No CLI package found. Run "npm install" first.');
+if (!binary) {
+  console.error('No CLI binary found. Run "npm install" first.');
   process.exit(1);
 }
-
-const binary = path.join(cliDir, isWindows ? 'erii-cli.exe' : 'erii-cli');
 
 const child = spawn(binary, process.argv.slice(2), { stdio: 'inherit' });
 forwardSignals(child);
