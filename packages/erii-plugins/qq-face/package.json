@@ -5,6 +5,9 @@
   "scripts": {
     "postinstall": "node postinstall.js"
   },
+  "dependencies": {
+    "adm-zip": "^0.5.16"
+  },
   "files": [
     "*.zip",
     "postinstall.js"

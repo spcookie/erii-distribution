@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const {execSync} = require('child_process');
+const AdmZip = require('adm-zip');
 
 const pkg = require('./package.json');
 const isWindows = process.platform === 'win32';
@@ -14,24 +14,8 @@ const projectRoot = nestedExists ? __dirname : path.resolve(spcookieFlat, '..', 
 const TAG = `[${pkg.name}]`;
 
 function extractZip(zipPath, destDir) {
-  fs.mkdirSync(destDir, {recursive: true});
-  if (isWindows) {
-    try {
-      execSync(`tar -xf "${zipPath}" -C "${destDir}"`, {cwd: __dirname, stdio: 'pipe'});
-      return;
-    } catch {
-    }
-    try {
-      execSync(`powershell -Command "Expand-Archive -Path '${zipPath}' -DestinationPath '${destDir}' -Force"`, {
-        cwd: __dirname,
-        stdio: 'pipe'
-      });
-    } catch (e) {
-      throw new Error(`Failed to extract zip: ${e.message}`);
-    }
-  } else {
-    execSync(`unzip -q -o "${zipPath}" -d "${destDir}"`, {cwd: __dirname, stdio: 'pipe'});
-  }
+  const zip = new AdmZip(zipPath);
+  zip.extractAllTo(destDir, true);
 }
 
 function createDirLink(target, linkPath) {
@@ -96,11 +80,6 @@ function main() {
     } finally {
       fs.rmSync(tmpDir, {recursive: true, force: true});
     }
-  }
-
-  if (!fs.existsSync(pluginDir)) {
-    console.log(TAG, 'Extraction failed, plugin directory not found.');
-    return;
   }
 
   // Link to plugins/

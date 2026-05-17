@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
 
 const isWindows = process.platform === 'win32';
 
@@ -11,7 +10,6 @@ const nestedExists = fs.existsSync(spcookieNested);
 const linkRoot = nestedExists ? __dirname : path.resolve(spcookieFlat, '..', '..');
 
 const libDir = path.join(__dirname, 'lib');
-const tarFile = path.join(libDir, 'browser.tar.gz');
 
 function readExistingLink(linkPath) {
   try {
@@ -42,26 +40,6 @@ function createDirLink(target, linkPath) {
   return 'created';
 }
 
-function extractIfNeeded() {
-  if (!fs.existsSync(tarFile)) return;
-
-  const files = fs.readdirSync(libDir);
-  const jarFiles = files.filter(f => f.endsWith('.jar'));
-
-  if (jarFiles.length > 0) {
-    console.log('JAR files already extracted, skipping.');
-    return;
-  }
-
-  console.log('Extracting browser.tar.gz...');
-  try {
-    execSync(`tar --force-local -xzf "${tarFile}"`, { cwd: libDir, stdio: 'pipe' });
-  } catch {
-    execSync(`tar -xzf "${tarFile}"`, { cwd: libDir });
-  }
-  fs.unlinkSync(tarFile);
-  console.log('Done.');
-}
 
 function linkLib() {
   if (!fs.existsSync(libDir)) {
@@ -77,5 +55,4 @@ function linkLib() {
   console.log(`  ${icon} lib/browser`);
 }
 
-extractIfNeeded();
 linkLib();
