@@ -4,7 +4,7 @@
 -XX:MaxGCPauseMillis=200
 -XX:+ExitOnOutOfMemoryError
 -XX:+HeapDumpOnOutOfMemoryError
--XX:HeapDumpPath=./erii/oom_heap.hprof
+-XX:HeapDumpPath=./oom_heap.hprof
 -Dfile.encoding=UTF-8
 -Duser.timezone=Asia/Shanghai
 --add-opens
