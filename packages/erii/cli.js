@@ -52,6 +52,135 @@ function findPkgDir(name) {
 
 // ---- server command ----
 if (process.argv[2] === 'server') {
+  const pidFile = path.join(projectRoot, '.conf', 'erii.pid');
+  const logDir = path.join(projectRoot, 'logs');
+
+  function isProcessRunning(pid) {
+    try {
+      process.kill(pid, 0);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  function readPidFile() {
+    try {
+      const pid = fs.readFileSync(pidFile, 'utf8').trim();
+      return pid ? parseInt(pid, 10) : null;
+    } catch (e) {
+      if (e.code === 'ENOENT') return null;
+      throw e;
+    }
+  }
+
+  function removePidFile() {
+    try {
+      fs.unlinkSync(pidFile);
+    } catch {
+    }
+  }
+
+  function killProcess(pid) {
+    if (isWindows) {
+      spawn('taskkill', ['/T', '/F', '/PID', String(pid)], {stdio: 'ignore'}).unref();
+    } else {
+      try {
+        process.kill(pid, 'SIGTERM');
+      } catch {
+      }
+    }
+  }
+
+  function stopServer(pid, callback) {
+    killProcess(pid);
+    let attempts = 0;
+    const timer = setInterval(() => {
+      attempts++;
+      if (!isProcessRunning(pid) || attempts > 50) {
+        clearInterval(timer);
+        removePidFile();
+        if (attempts > 50) {
+          callback(new Error('timeout'));
+        } else {
+          callback(null);
+        }
+      }
+    }, 100);
+  }
+
+  function doDaemonLaunch(javaBin, javaArgs, envVars) {
+    const existingPid = readPidFile();
+    if (existingPid && isProcessRunning(existingPid)) {
+      console.error(`Server is already running (PID: ${existingPid}). Use "erii server stop" first.`);
+      process.exit(1);
+    }
+
+    fs.mkdirSync(path.dirname(pidFile), {recursive: true});
+    fs.mkdirSync(logDir, {recursive: true});
+    const logFile = path.join(logDir, 'server.log');
+    const out = fs.openSync(logFile, 'a');
+    const err = fs.openSync(logFile, 'a');
+
+    const child = spawn(javaBin, javaArgs, {
+      cwd: projectRoot,
+      stdio: ['ignore', out, err],
+      env: envVars,
+      detached: true,
+      windowsHide: true,
+    });
+
+    fs.writeFileSync(pidFile, String(child.pid));
+    child.unref();
+    console.log(`Server started in background. PID: ${child.pid}`);
+    console.log(`Log: ${logFile}`);
+    process.exit(0);
+  }
+
+  // ---- stop subcommand ----
+  if (process.argv[3] === 'stop') {
+    const pid = readPidFile();
+    if (!pid) {
+      console.log('No PID file found. Server is not running in daemon mode.');
+      process.exit(0);
+    }
+    if (!isProcessRunning(pid)) {
+      console.log(`Process ${pid} is not running. Cleaning up PID file.`);
+      removePidFile();
+      process.exit(0);
+    }
+
+    console.log(`Stopping server (PID: ${pid})...`);
+    stopServer(pid, function (err) {
+      if (err) {
+        console.log('Server did not stop gracefully. You may need to kill it manually.');
+        process.exit(1);
+      }
+      console.log('Server stopped.');
+      process.exit(0);
+    });
+    return;
+  }
+
+  // ---- status subcommand ----
+  if (process.argv[3] === 'status') {
+    const pid = readPidFile();
+    if (!pid) {
+      console.log('Server is not running (no PID file).');
+      process.exit(0);
+    }
+    if (isProcessRunning(pid)) {
+      console.log(`Server is running. PID: ${pid}`);
+      process.exit(0);
+    } else {
+      console.log(`Server is not running (stale PID file: ${pid}).`);
+      process.exit(1);
+    }
+    return;
+  }
+
+  // ---- setup (common to foreground, daemon, and restart) ----
+
   const depsDir = findPkgDir('erii-deps');
   if (!depsDir) {
     console.error('erii-deps not found. Run "npm install" first.');
@@ -60,11 +189,15 @@ if (process.argv[2] === 'server') {
 
   function readOpts(filename) {
     const p = path.join(depsDir, 'opts', filename);
-    if (!fs.existsSync(p)) return [];
-    return fs.readFileSync(p, 'utf8')
-        .split('\n')
-        .map(l => l.trim())
-        .filter(l => l && !l.startsWith('#'));
+    try {
+      return fs.readFileSync(p, 'utf8')
+          .split('\n')
+          .map(l => l.trim())
+          .filter(l => l && !l.startsWith('#'));
+    } catch (e) {
+      if (e.code === 'ENOENT') return [];
+      throw e;
+    }
   }
 
   const javaOpts = readOpts('java.opts');
@@ -73,22 +206,26 @@ if (process.argv[2] === 'server') {
   // Load .env.local into environment variables
   const envLocal = path.join(projectRoot, 'conf', '.env.local');
   const env = {...process.env};
-  if (fs.existsSync(envLocal)) {
+  try {
     const lines = fs.readFileSync(envLocal, 'utf8').split('\n');
     for (const line of lines) {
       const m = line.trim().match(/^([A-Z_][A-Z0-9_]*)\s*=\s*(.*)$/);
       if (m) env[m[1]] = m[2];
     }
+  } catch (e) {
+    if (e.code !== 'ENOENT') throw e;
   }
 
   // Load erii-deps env.opts — system defaults, always take precedence
   const envOpts = path.join(depsDir, 'opts', 'env.opts');
-  if (fs.existsSync(envOpts)) {
+  try {
     const lines = fs.readFileSync(envOpts, 'utf8').split('\n');
     for (const line of lines) {
       const m = line.trim().match(/^([A-Z_][A-Z0-9_]*)\s*=\s*(.*)$/);
       if (m) env[m[1]] = m[2];
     }
+  } catch (e) {
+    if (e.code !== 'ENOENT') throw e;
   }
 
   const libDir = path.join(projectRoot, 'lib');
@@ -111,8 +248,11 @@ if (process.argv[2] === 'server') {
   const userArgs = process.argv.slice(3);
   const userSystemProps = [];
   const userProgramArgs = [];
+  let daemonMode = false;
   for (const arg of userArgs) {
-    if (arg.startsWith('-D')) {
+    if (arg === '--daemon' || arg === '-d') {
+      daemonMode = true;
+    } else if (arg.startsWith('-D')) {
       userSystemProps.push(arg);
     } else {
       userProgramArgs.push(arg);
@@ -144,9 +284,35 @@ if (process.argv[2] === 'server') {
     }
   }
 
-  const child = spawn(java, args, {cwd: projectRoot, stdio: 'inherit', env});
-  forwardSignals(child);
-  child.on('exit', (code) => process.exit(code || 0));
+  // ---- restart subcommand (after setup so java/args/env are available) ----
+  if (process.argv[3] === 'restart') {
+    const oldPid = readPidFile();
+    if (oldPid && isProcessRunning(oldPid)) {
+      console.log(`Stopping server (PID: ${oldPid})...`);
+      stopServer(oldPid, function (err) {
+        if (err) {
+          console.log('Failed to stop old server. You may need to kill it manually.');
+          process.exit(1);
+        }
+        console.log('Server stopped. Starting server...');
+        doDaemonLaunch(java, args, env);
+      });
+      return;
+    } else if (oldPid) {
+      removePidFile();
+    }
+    console.log('Starting server...');
+    doDaemonLaunch(java, args, env);
+    return;
+  }
+
+  if (daemonMode) {
+    doDaemonLaunch(java, args, env);
+  } else {
+    const child = spawn(java, args, {cwd: projectRoot, stdio: 'inherit', env});
+    forwardSignals(child);
+    child.on('exit', (code) => process.exit(code || 0));
+  }
   return;
 }
 
