@@ -14,20 +14,84 @@ echo -e "${BLUE}========================================${NC}"
 echo -e "${BLUE}     Erii Installer (Linux/macOS)       ${NC}"
 echo -e "${BLUE}========================================${NC}"
 
+# --- Helper functions ---
+
+detect_pkg_manager() {
+    if command -v apt-get &> /dev/null; then echo "apt-get"
+    elif command -v dnf &> /dev/null; then echo "dnf"
+    elif command -v yum &> /dev/null; then echo "yum"
+    elif command -v apk &> /dev/null; then echo "apk"
+    elif command -v pacman &> /dev/null; then echo "pacman"
+    elif command -v brew &> /dev/null; then echo "brew"
+    else echo ""; fi
+}
+
+maybe_sudo() {
+    if [ "$(id -u)" -eq 0 ]; then
+        echo ""
+    else
+        command -v sudo &> /dev/null && echo "sudo" || echo ""
+    fi
+}
+
+ensure_tool() {
+    local tool=$1
+    local pkg=${2:-$tool}
+
+    if ! command -v "$tool" &> /dev/null; then
+        echo -e "  ${YELLOW}⚠${NC} $tool not found, installing '$pkg'..."
+        local pm=$(detect_pkg_manager)
+        local SUDO=$(maybe_sudo)
+
+        case "$pm" in
+            apt-get) $SUDO apt-get update -qq && $SUDO apt-get install -y -qq "$pkg" ;;
+            dnf)     $SUDO dnf install -y -q "$pkg" ;;
+            yum)     $SUDO yum install -y -q "$pkg" ;;
+            apk)     $SUDO apk add --no-cache "$pkg" ;;
+            pacman)  $SUDO pacman -S --noconfirm "$pkg" ;;
+            brew)    brew install "$pkg" ;;
+            "")
+                echo -e "${RED}Cannot install '$tool': no supported package manager detected${NC}"
+                echo -e "Supported: apt-get, dnf, yum, apk, pacman, brew"
+                echo -e "Please install '$tool' manually and re-run this script."
+                exit 1
+                ;;
+        esac
+
+        if ! command -v "$tool" &> /dev/null; then
+            echo -e "${RED}Failed to install '$tool'${NC}"
+            exit 1
+        fi
+        echo -e "  ${GREEN}✓${NC} $tool installed"
+    fi
+}
+
+# --- Check prerequisites ---
+echo -e "\n${YELLOW}Checking prerequisites...${NC}"
+ensure_tool curl
+ensure_tool tar
+echo -e "  ${GREEN}✓${NC} All prerequisites satisfied"
+
+# --- Detect platform ---
+OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+ARCH=$(uname -m)
+case "$ARCH" in
+    x86_64) ARCH="x64" ;;
+    aarch64|arm64) ARCH="arm64" ;;
+    *) echo -e "${RED}Unsupported architecture: $ARCH${NC}"; exit 1 ;;
+esac
+
+# On Linux, ensure xz support for .tar.xz extraction
+if [ "$OS" != "darwin" ] && ! command -v xz &> /dev/null; then
+    ensure_tool xz "xz-utils"
+fi
+
 # --- Install Node.js ---
 echo -e "\n${YELLOW}[1/3] Installing Node.js LTS...${NC}"
 
 if command -v node &> /dev/null; then
     echo -e "  ${GREEN}✓${NC} Node.js $(node -v) already installed"
 else
-    OS=$(uname -s | tr '[:upper:]' '[:lower:]')
-    ARCH=$(uname -m)
-    case "$ARCH" in
-        x86_64) ARCH="x64" ;;
-        aarch64|arm64) ARCH="arm64" ;;
-        *) echo -e "${RED}Unsupported architecture: $ARCH${NC}"; exit 1 ;;
-    esac
-
     # Resolve latest LTS version from redirect URL
     NODE_VERSION=$(curl -s -o /dev/null -w '%{url_effective}' -L https://nodejs.org/dist/latest-lts/ | sed 's|.*/v||;s|/||')
 
@@ -43,7 +107,7 @@ else
     curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/${TARBALL}" -o "/tmp/${TARBALL}"
 
     echo -e "  Installing to /usr/local..."
-    sudo $DECOMPRESS "/tmp/${TARBALL}" -C /usr/local --strip-components=1
+    $(maybe_sudo) $DECOMPRESS "/tmp/${TARBALL}" -C /usr/local --strip-components=1
     rm -f "/tmp/${TARBALL}"
 
     echo -e "  ${GREEN}✓${NC} Node.js v${NODE_VERSION} installed"
