@@ -10,8 +10,31 @@
   "scripts": {
     "postinstall": "node postinstall.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": ""
+  "keywords": [
+    "erii",
+    "qq",
+    "bot",
+    "chatbot",
+    "group-chat",
+    "机器人",
+    "群聊机器人",
+    "ai",
+    "napcat",
+    "mirai"
+  ],
+  "author": "spcookie",
+  "license": "MIT",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spcookie/erii.git",
+    "directory": "erii-distribution/packages/erii-cli/erii-windows/amd64"
+  },
+  "bugs": {
+    "url": "https://github.com/spcookie/erii/issues"
+  },
+  "homepage": "https://github.com/spcookie/erii#readme",
+  "publishConfig": {
+    "access": "public"
+  }
 }

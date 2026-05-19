@@ -12,5 +12,16 @@
     "packages/erii-plugins/*",
     "packages/erii-runtime/*/*",
     "packages/erii-setup"
-  ]
+  ],
+  "author": "spcookie",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spcookie/erii.git",
+    "directory": "erii-distribution"
+  },
+  "bugs": {
+    "url": "https://github.com/spcookie/erii/issues"
+  },
+  "homepage": "https://github.com/spcookie/erii#readme"
 }

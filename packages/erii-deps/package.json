@@ -4,9 +4,32 @@
   "scripts": {
     "postinstall": "node postinstall.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "erii",
+    "qq",
+    "bot",
+    "chatbot",
+    "group-chat",
+    "机器人",
+    "群聊机器人",
+    "ai",
+    "napcat",
+    "mirai"
+  ],
+  "author": "spcookie",
+  "license": "MIT",
   "description": "",
-  "dependencies": {}
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spcookie/erii.git",
+    "directory": "erii-distribution/packages/erii-deps"
+  },
+  "bugs": {
+    "url": "https://github.com/spcookie/erii/issues"
+  },
+  "homepage": "https://github.com/spcookie/erii#readme",
+  "publishConfig": {
+    "access": "public"
+  }
 }
