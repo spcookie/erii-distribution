@@ -179,6 +179,38 @@ if (process.argv[2] === 'server') {
     return;
   }
 
+  // ---- logs subcommand ----
+  if (process.argv[3] === 'logs') {
+    const logFile = path.join(logDir, 'server.log');
+    try {
+      const content = fs.readFileSync(logFile, 'utf8');
+      const lines = content.split('\n');
+      const all = process.argv.includes('--all') || process.argv.includes('-a');
+
+      let tailCount = 100;
+      const tailIdx = process.argv.indexOf('--tail');
+      const tIdx = process.argv.indexOf('-t');
+      const optIdx = tailIdx !== -1 ? tailIdx : tIdx;
+      if (optIdx !== -1 && optIdx + 1 < process.argv.length) {
+        const n = parseInt(process.argv[optIdx + 1], 10);
+        if (!isNaN(n) && n > 0) tailCount = n;
+      }
+
+      const output = all ? lines : lines.slice(-tailCount);
+      process.stdout.write(output.join('\n'));
+      if (!all && lines.length > tailCount) {
+        console.log(`\n... showing last ${tailCount} lines (${lines.length} total). Use --all to see full log.`);
+      }
+    } catch (e) {
+      if (e.code === 'ENOENT') {
+        console.log('No server log file found.');
+      } else {
+        throw e;
+      }
+    }
+    return;
+  }
+
   // ---- setup (common to foreground, daemon, and restart) ----
 
   const depsDir = findPkgDir('erii-deps');
