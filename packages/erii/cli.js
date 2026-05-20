@@ -109,13 +109,7 @@ if (process.argv[2] === 'server') {
     }, 100);
   }
 
-  function doDaemonLaunch(javaBin, javaArgs, envVars) {
-    const existingPid = readPidFile();
-    if (existingPid && isProcessRunning(existingPid)) {
-      console.error(`Server is already running (PID: ${existingPid}). Use "erii server stop" first.`);
-      process.exit(1);
-    }
-
+    function daemonStart(javaBin, javaArgs, envVars) {
     fs.mkdirSync(path.dirname(pidFile), {recursive: true});
     fs.mkdirSync(logDir, {recursive: true});
     const logFile = path.join(logDir, 'server.log');
@@ -136,6 +130,26 @@ if (process.argv[2] === 'server') {
     console.log(`Log: ${logFile}`);
     process.exit(0);
   }
+
+    function daemonStartOrRestart(javaBin, javaArgs, envVars) {
+        const existingPid = readPidFile();
+        if (existingPid && isProcessRunning(existingPid)) {
+            console.log(`Server is already running (PID: ${existingPid}). Restarting...`);
+            stopServer(existingPid, function (err) {
+                if (err) {
+                    console.log('Failed to stop old server. You may need to kill it manually.');
+                    process.exit(1);
+                }
+                console.log('Server stopped. Starting server...');
+                daemonStart(javaBin, javaArgs, envVars);
+            });
+            return;
+        }
+        if (existingPid) {
+            removePidFile();
+        }
+        daemonStart(javaBin, javaArgs, envVars);
+    }
 
   // ---- stop subcommand ----
   if (process.argv[3] === 'stop') {
@@ -280,10 +294,10 @@ if (process.argv[2] === 'server') {
   const userArgs = process.argv.slice(3);
   const userSystemProps = [];
   const userProgramArgs = [];
-  let daemonMode = false;
+    let foregroundMode = false;
   for (const arg of userArgs) {
-    if (arg === '--daemon' || arg === '-d') {
-      daemonMode = true;
+      if (arg === '--foreground' || arg === '-f') {
+          foregroundMode = true;
     } else if (arg.startsWith('-D')) {
       userSystemProps.push(arg);
     } else {
@@ -318,32 +332,16 @@ if (process.argv[2] === 'server') {
 
   // ---- restart subcommand (after setup so java/args/env are available) ----
   if (process.argv[3] === 'restart') {
-    const oldPid = readPidFile();
-    if (oldPid && isProcessRunning(oldPid)) {
-      console.log(`Stopping server (PID: ${oldPid})...`);
-      stopServer(oldPid, function (err) {
-        if (err) {
-          console.log('Failed to stop old server. You may need to kill it manually.');
-          process.exit(1);
-        }
-        console.log('Server stopped. Starting server...');
-        doDaemonLaunch(java, args, env);
-      });
-      return;
-    } else if (oldPid) {
-      removePidFile();
-    }
-    console.log('Starting server...');
-    doDaemonLaunch(java, args, env);
+      daemonStartOrRestart(java, args, env);
     return;
   }
 
-  if (daemonMode) {
-    doDaemonLaunch(java, args, env);
-  } else {
+    if (foregroundMode) {
     const child = spawn(java, args, {cwd: projectRoot, stdio: 'inherit', env});
     forwardSignals(child);
     child.on('exit', (code) => process.exit(code || 0));
+    } else {
+        daemonStartOrRestart(java, args, env);
   }
   return;
 }
