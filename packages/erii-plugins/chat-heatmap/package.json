@@ -1,0 +1,33 @@
+{
+  "name": "@spcookie/erii-plugin-chat-heatmap",
+  "version": "1.0.1",
+  "description": "Erii Chat Heatmap plugin",
+  "scripts": {
+    "postinstall": "node postinstall.js"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.16"
+  },
+  "files": [
+    "*.zip",
+    "postinstall.js"
+  ],
+  "author": "spcookie",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spcookie/erii.git",
+    "directory": "erii-distribution/packages/erii-plugins/chat-heatmap"
+  },
+  "bugs": {
+    "url": "https://github.com/spcookie/erii/issues"
+  },
+  "homepage": "https://github.com/spcookie/erii#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "chat",
+    "heatmap"
+  ]
+}
