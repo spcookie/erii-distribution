@@ -1,6 +1,6 @@
 {
   "name": "@spcookie/erii-plugin-lolisuki",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Erii Lolisuki plugin",
   "scripts": {
     "postinstall": "node postinstall.js"
