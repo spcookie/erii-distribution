@@ -12,15 +12,10 @@
   },
   "keywords": [
     "erii",
-    "qq",
-    "bot",
-    "chatbot",
-    "group-chat",
-    "机器人",
-    "群聊机器人",
-    "ai",
-    "napcat",
-    "mirai"
+    "runtime",
+    "jre",
+    "windows",
+    "x86"
   ],
   "author": "spcookie",
   "license": "MIT",

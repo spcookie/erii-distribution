@@ -6,15 +6,12 @@
   },
   "keywords": [
     "erii",
-    "qq",
-    "bot",
+    "qq-bot",
     "chatbot",
     "group-chat",
-    "机器人",
-    "群聊机器人",
     "ai",
-    "napcat",
-    "mirai"
+    "kotlin",
+    "ktor"
   ],
   "author": "spcookie",
   "license": "MIT",

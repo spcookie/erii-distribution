@@ -12,14 +12,10 @@
   },
   "keywords": [
     "erii",
-    "qq",
-    "bot",
-    "chatbot",
-    "group-chat",
-    "机器人",
-    "群聊机器人",
-    "ai",
-    "napcat"
+    "playwright",
+    "browser-automation",
+    "arm64",
+    "native-driver"
   ],
   "author": "spcookie",
   "license": "MIT",

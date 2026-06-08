@@ -6,14 +6,10 @@
   },
   "keywords": [
     "erii",
-    "qq",
-    "bot",
-    "chatbot",
-    "group-chat",
-    "机器人",
-    "群聊机器人",
-    "ai",
-    "napcat"
+    "playwright",
+    "browser-automation",
+    "driver",
+    "java"
   ],
   "author": "spcookie",
   "license": "MIT",
