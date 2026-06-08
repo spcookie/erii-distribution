@@ -1,6 +1,12 @@
 {
-  "name": "@spcookie/erii-browser",
+  "name": "@spcookie/erii-browser-driver-darwin-x64",
   "version": "1.0.0",
+  "os": [
+    "darwin"
+  ],
+  "cpu": [
+    "x64"
+  ],
   "scripts": {
     "postinstall": "node postinstall.js"
   },
@@ -13,17 +19,15 @@
     "机器人",
     "群聊机器人",
     "ai",
-    "napcat",
-    "mirai"
+    "napcat"
   ],
   "author": "spcookie",
   "license": "MIT",
-  "description": "",
-  "dependencies": {},
+  "description": "Erii browser driver - macOS x64 native libraries",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/spcookie/erii.git",
-    "directory": "erii-distribution/packages/erii-browser"
+    "directory": "erii-distribution/packages/erii-browser-driver/darwin-x64"
   },
   "bugs": {
     "url": "https://github.com/spcookie/erii/issues"

@@ -1,0 +1,33 @@
+{
+  "name": "@spcookie/erii-browser-driver-base",
+  "version": "1.0.0",
+  "scripts": {
+    "postinstall": "node postinstall.js"
+  },
+  "keywords": [
+    "erii",
+    "qq",
+    "bot",
+    "chatbot",
+    "group-chat",
+    "机器人",
+    "群聊机器人",
+    "ai",
+    "napcat"
+  ],
+  "author": "spcookie",
+  "license": "MIT",
+  "description": "Erii browser driver - Java classpath code",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spcookie/erii.git",
+    "directory": "erii-distribution/packages/erii-browser-driver/base"
+  },
+  "bugs": {
+    "url": "https://github.com/spcookie/erii/issues"
+  },
+  "homepage": "https://github.com/spcookie/erii#readme",
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,6 +1,6 @@
 {
   "name": "@spcookie/erii",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "description": "Erii distribution - all platforms",
   "bin": {
     "erii": "cli.js"
@@ -19,10 +19,15 @@
     "@spcookie/erii-runtime-linux-aarch64": "1.0.0",
     "@spcookie/erii-runtime-linux-x64": "1.0.0",
     "@spcookie/erii-runtime-windows-x64": "1.0.0",
-    "@spcookie/erii-runtime-windows-x86": "1.0.0"
+    "@spcookie/erii-runtime-windows-x86": "1.0.0",
+    "@spcookie/erii-browser-driver-win32-x64": "1.0.0",
+    "@spcookie/erii-browser-driver-linux-x64": "1.0.0",
+    "@spcookie/erii-browser-driver-linux-arm64": "1.0.0",
+    "@spcookie/erii-browser-driver-darwin-x64": "1.0.0",
+    "@spcookie/erii-browser-driver-darwin-arm64": "1.0.0"
   },
   "dependencies": {
-    "@spcookie/erii-browser": "1.0.0",
+    "@spcookie/erii-browser-driver-base": "1.0.0",
     "@spcookie/erii-core": "1.1.4",
     "@spcookie/erii-config": "1.1.1",
     "@spcookie/erii-deps": "1.1.0"

@@ -1,0 +1,39 @@
+{
+  "name": "@spcookie/erii-browser-driver-win32-x64",
+  "version": "1.0.0",
+  "os": [
+    "win32"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "scripts": {
+    "postinstall": "node postinstall.js"
+  },
+  "keywords": [
+    "erii",
+    "qq",
+    "bot",
+    "chatbot",
+    "group-chat",
+    "机器人",
+    "群聊机器人",
+    "ai",
+    "napcat"
+  ],
+  "author": "spcookie",
+  "license": "MIT",
+  "description": "Erii browser driver - Windows x64 native libraries",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spcookie/erii.git",
+    "directory": "erii-distribution/packages/erii-browser-driver/win32-x64"
+  },
+  "bugs": {
+    "url": "https://github.com/spcookie/erii/issues"
+  },
+  "homepage": "https://github.com/spcookie/erii#readme",
+  "publishConfig": {
+    "access": "public"
+  }
+}
