@@ -276,7 +276,8 @@ if (process.argv[2] === 'server') {
 
   const libDir = path.join(projectRoot, 'lib');
   const cp = [
-    path.join(libDir, 'browser', '*'),
+      path.join(libDir, 'browser', 'base', '*'),
+      path.join(libDir, 'browser', 'driver', '*'),
     path.join(libDir, 'core', '*'),
     path.join(libDir, 'deps', '*'),
   ].join(path.delimiter);

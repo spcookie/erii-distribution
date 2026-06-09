@@ -19,23 +19,23 @@ function readExistingLink(linkPath) {
     }
 }
 
-function createFileLink(target, linkPath) {
+function createDirLink(target, linkPath) {
     const existing = readExistingLink(linkPath);
     if (existing !== null) {
         const resolved = path.resolve(path.dirname(linkPath), existing);
         if (resolved === path.resolve(target)) return 'skipped';
-        console.log(`  [WARN] ${path.basename(linkPath)} exists but points elsewhere, skipping.`);
+        console.log(`  [WARN] ${linkPath} exists but points elsewhere, skipping.`);
         return 'skipped';
     }
     if (fs.existsSync(linkPath)) {
-        console.log(`  [WARN] ${path.basename(linkPath)} already exists, skipping.`);
+        console.log(`  [WARN] ${linkPath} already exists as a regular file/dir, skipping.`);
         return 'skipped';
     }
 
     if (isWindows) {
-        fs.copyFileSync(target, linkPath);
+        fs.symlinkSync(target, linkPath, 'junction');
     } else {
-        fs.symlinkSync(target, linkPath, 'file');
+        fs.symlinkSync(target, linkPath, 'dir');
     }
     return 'created';
 }
@@ -51,14 +51,9 @@ function linkLib() {
     const browserDir = path.join(libRoot, 'browser');
     fs.mkdirSync(browserDir, {recursive: true});
 
-    const files = fs.readdirSync(libDir).filter(f => f.endsWith('.jar'));
-    for (const f of files) {
-        const src = path.join(libDir, f);
-        const dst = path.join(browserDir, f);
-        const r = createFileLink(src, dst);
-        const icon = r === 'created' ? '✓' : '○';
-        console.log(`  ${icon} lib/browser/${f}`);
-    }
+    const r = createDirLink(libDir, path.join(browserDir, 'driver'));
+    const icon = r === 'created' ? '✓' : '○';
+    console.log(`  ${icon} lib/browser/driver -> erii-browser-driver-{platform}/lib`);
 }
 
 linkLib();

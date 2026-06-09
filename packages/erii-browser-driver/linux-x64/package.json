@@ -1,6 +1,6 @@
 {
   "name": "@spcookie/erii-browser-driver-linux-x64",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "os": [
     "linux"
   ],
