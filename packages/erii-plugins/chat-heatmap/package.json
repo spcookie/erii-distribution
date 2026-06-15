@@ -1,6 +1,6 @@
 {
   "name": "@spcookie/erii-plugin-chat-heatmap",
-  "version": "1.0.8 ",
+  "version": "1.0.9",
   "description": "Erii Chat Heatmap plugin",
   "scripts": {
     "postinstall": "node postinstall.js"
