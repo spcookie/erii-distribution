@@ -1,6 +1,6 @@
 {
   "name": "@spcookie/erii-plugin-animal",
-  "version": "1.2.9",
+  "version": "1.2.10",
   "description": "Erii Animal plugin",
   "scripts": {
     "postinstall": "node postinstall.js"
