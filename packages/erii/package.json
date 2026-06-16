@@ -1,6 +1,6 @@
 {
   "name": "@spcookie/erii",
-  "version": "1.1.31",
+  "version": "1.1.32",
   "description": "Erii distribution - all platforms",
   "bin": {
     "erii": "cli.js"
@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@spcookie/erii-browser-driver-base": "1.0.3",
-    "@spcookie/erii-core": "1.2.10",
+    "@spcookie/erii-core": "1.2.11",
     "@spcookie/erii-config": "1.1.6",
     "@spcookie/erii-deps": "1.2.1"
   },
