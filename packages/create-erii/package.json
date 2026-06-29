@@ -1,6 +1,6 @@
 {
   "name": "create-erii-bot",
-  "version": "1.2.10",
+  "version": "1.2.11",
   "description": "Bootstrap an Erii project — one command to get started",
   "bin": {
     "create-erii-bot": "./init.js"
