@@ -54,4 +54,17 @@ function linkLib() {
     console.log(`  ${icon} lib/deps`);
 }
 
+function linkOpts() {
+    const optsDir = path.join(__dirname, 'opts');
+    if (!fs.existsSync(optsDir)) {
+        console.log('  [WARN] erii-deps opts source missing');
+        return;
+    }
+    const dstDir = path.join(linkRoot, 'opts');
+    const r = createDirLink(optsDir, dstDir);
+    const icon = r === 'created' ? '✓' : '○';
+    console.log(`  ${icon} opts`);
+}
+
 linkLib();
+linkOpts();
