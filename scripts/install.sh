@@ -86,12 +86,44 @@ if [ "$OS" != "darwin" ] && ! command -v xz &> /dev/null; then
     ensure_tool xz "xz-utils"
 fi
 
+# --- Detect WSL ---
+is_wsl() {
+    # WSL2: uname -r contains "microsoft" or "WSL"
+    # WSL1: /proc/sys/kernel/osrelease exists on Linux kernel
+    if [ "$OS" = "linux" ]; then
+        uname -r | grep -qi "microsoft\|WSL" && return 0
+        [ -f /proc/sys/kernel/osrelease ] && return 0
+    fi
+    return 1
+}
+
+# Check if the node binary is a native Linux executable (not a Windows binary via WSL interop)
+is_native_linux_node() {
+    local node_path
+    node_path=$(command -v node 2>/dev/null || echo "")
+    [ -z "$node_path" ] && return 1
+    # Windows binaries appear under /mnt/ in WSL
+    case "$node_path" in
+        /mnt/*) return 1 ;;
+        *) return 0 ;;
+    esac
+}
+
 # --- Install Node.js ---
 echo -e "\n${YELLOW}[1/3] Installing Node.js LTS...${NC}"
 
+NEED_NODE_INSTALL=false
 if command -v node &> /dev/null; then
-    echo -e "  ${GREEN}✓${NC} Node.js $(node -v) already installed"
-else
+    if is_wsl && ! is_native_linux_node; then
+        echo -e "  ${YELLOW}⚠${NC} Detected Windows Node.js in WSL: $(node -v) ($(command -v node))"
+        echo -e "  ${YELLOW}⚠${NC} Installing Linux-native Node.js to /usr/local..."
+        NEED_NODE_INSTALL=true
+    else
+        echo -e "  ${GREEN}✓${NC} Node.js $(node -v) already installed"
+    fi
+fi
+
+if ! command -v node &> /dev/null || [ "$NEED_NODE_INSTALL" = true ]; then
     # Resolve latest LTS version from redirect URL
     NODE_VERSION=$(curl -s -o /dev/null -w '%{url_effective}' -L https://nodejs.org/dist/latest-lts/ | sed 's|.*/v||;s|/||')
 
@@ -111,6 +143,12 @@ else
     rm -f "/tmp/${TARBALL}"
 
     echo -e "  ${GREEN}✓${NC} Node.js v${NODE_VERSION} installed"
+
+    # On WSL, ensure /usr/local/bin takes precedence over Windows paths
+    if is_wsl; then
+        export PATH="/usr/local/bin:$PATH"
+        echo -e "  ${YELLOW}⚠${NC} WSL detected: /usr/local/bin prepended to PATH for this session"
+    fi
 fi
 
 echo -e "  ${GREEN}✓${NC} Node.js $(node -v)"
@@ -131,3 +169,8 @@ echo -e "${GREEN}     Setup Complete!                    ${NC}"
 echo -e "${GREEN}========================================${NC}"
 echo -e "\nStart the server with:"
 echo -e "  ${YELLOW}erii server${NC}"
+
+if is_wsl; then
+    echo -e "\n${YELLOW}WSL Notice:${NC} To ensure Linux Node.js is always used, add this to your ~/.bashrc or ~/.zshrc:"
+    echo -e "  ${BLUE}export PATH=\"/usr/local/bin:\$PATH\"${NC}"
+fi
