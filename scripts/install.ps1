@@ -38,6 +38,41 @@ function Write-Info {
     Write-Host "  $Msg" -ForegroundColor Cyan
 }
 
+# Measure latency to a URL (seconds). Returns 999 on failure.
+# Tries HEAD first, falls back to a ranged GET for servers that reject HEAD.
+function Measure-Latency {
+    param([string]$Url)
+    try {
+        $sw = [System.Diagnostics.Stopwatch]::StartNew()
+        Invoke-WebRequest -Uri $Url -Method Head -TimeoutSec 4 -UseBasicParsing | Out-Null
+        $sw.Stop()
+        return $sw.Elapsed.TotalSeconds
+    } catch {
+        try {
+            $sw = [System.Diagnostics.Stopwatch]::StartNew()
+            Invoke-WebRequest -Uri $Url -Headers @{ Range = "bytes=0-0" } -TimeoutSec 4 -UseBasicParsing | Out-Null
+            $sw.Stop()
+            return $sw.Elapsed.TotalSeconds
+        } catch {
+            return 999
+        }
+    }
+}
+
+# Select-Fastest -Probe "/index.json" -Candidates @(@{Label=..;Base=..}, ...)
+# Returns the base URL with the lowest latency.
+function Select-Fastest {
+    param([string]$Probe, [hashtable[]]$Candidates)
+    $best = $null
+    $bestTime = [double]::MaxValue
+    foreach ($c in $Candidates) {
+        $t = Measure-Latency ($c.Base + $Probe)
+        Write-Host ("    {0,-10} {1,7:N3}s  {2}" -f $c.Label, $t, $c.Base) -ForegroundColor DarkGray
+        if ($t -lt $bestTime) { $bestTime = $t; $best = $c.Base }
+    }
+    return $best
+}
+
 Write-Host "========================================" -ForegroundColor Blue
 Write-Host "     Erii Installer (Windows)           " -ForegroundColor Blue
 Write-Host "========================================" -ForegroundColor Blue
@@ -48,6 +83,34 @@ if (-not $isAdmin) {
     Write-Warn "Not running as Administrator. The Node.js installer will request elevation via UAC prompt."
 }
 
+# --- Select fastest mirrors (China-friendly) ---
+Write-Step "Selecting fastest mirror (testing latency)..."
+
+if ($env:ERII_NODE_MIRROR) {
+    $NodeDistBase = $env:ERII_NODE_MIRROR
+    Write-Ok "Node.js source from `$ERII_NODE_MIRROR: $NodeDistBase"
+} else {
+    Write-Info "Node.js mirrors:"
+    $NodeDistBase = Select-Fastest -Probe "/index.json" -Candidates @(
+        @{ Label = "npmmirror"; Base = "https://cdn.npmmirror.com/binaries/node" },
+        @{ Label = "tuna";      Base = "https://mirrors.tuna.tsinghua.edu.cn/nodejs-release" },
+        @{ Label = "official";  Base = "https://nodejs.org/dist" }
+    )
+    Write-Ok "Node.js source: $NodeDistBase"
+}
+
+if ($env:ERII_NPM_REGISTRY) {
+    $NpmRegistry = $env:ERII_NPM_REGISTRY
+    Write-Ok "npm registry from `$ERII_NPM_REGISTRY: $NpmRegistry"
+} else {
+    Write-Info "npm registries:"
+    $NpmRegistry = Select-Fastest -Probe "/" -Candidates @(
+        @{ Label = "npmmirror"; Base = "https://registry.npmmirror.com" },
+        @{ Label = "official";  Base = "https://registry.npmjs.org" }
+    )
+    Write-Ok "npm registry: $NpmRegistry"
+}
+
 # --- Install Node.js ---
 Write-Step "[1/3] Installing Node.js LTS..."
 
@@ -55,10 +118,10 @@ if (Get-Command node -ErrorAction SilentlyContinue) {
     $CurrentNode = & node -v
     Write-Ok "Node.js $CurrentNode already installed"
 } else {
-    # Get latest LTS version from Node.js dist index
+    # Get latest LTS version from the selected mirror's dist index
     try {
         Write-Info "Fetching latest Node.js LTS version..."
-        $NodeIndex = Invoke-WebRequest -Uri "https://nodejs.org/dist/index.json" -UseBasicParsing | ConvertFrom-Json
+        $NodeIndex = Invoke-WebRequest -Uri "$NodeDistBase/index.json" -UseBasicParsing | ConvertFrom-Json
     } catch {
         Write-Err "Failed to fetch Node.js version list. Check your internet connection."
         exit 1
@@ -79,7 +142,7 @@ if (Get-Command node -ErrorAction SilentlyContinue) {
         }
     }
 
-    $MsiUrl = "https://nodejs.org/dist/v$NodeVersion/node-v$NodeVersion-$Arch.msi"
+    $MsiUrl = "$NodeDistBase/v$NodeVersion/node-v$NodeVersion-$Arch.msi"
     $MsiPath = Join-Path $env:TEMP "node-install.msi"
 
     try {
@@ -119,7 +182,7 @@ Write-Ok "npm $NpmVer"
 
 # --- Install Erii ---
 Write-Step "[2/3] Installing @spcookie/erii globally..."
-& npm install -g @spcookie/erii
+& npm install -g @spcookie/erii --registry $NpmRegistry
 Write-Ok "@spcookie/erii installed"
 
 # --- Run Setup ---

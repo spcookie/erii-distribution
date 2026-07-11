@@ -66,6 +66,33 @@ ensure_tool() {
     fi
 }
 
+# Measure latency to a URL (seconds as float). Returns 999 on failure.
+# Uses a ranged GET (first byte) so it works on files and API roots alike.
+measure_latency() {
+    local url=$1
+    local t
+    t=$(curl -o /dev/null -s -m 4 --connect-timeout 3 -r 0-0 -w '%{time_total}' "$url" 2>/dev/null)
+    if [ -z "$t" ]; then echo "999"; else echo "$t"; fi
+}
+
+# select_fastest <probe_suffix> <label|base> <label|base> ...
+# Prints the base URL with the lowest latency to stdout; progress goes to stderr.
+select_fastest() {
+    local probe=$1; shift
+    local best_base="" best_time=""
+    for entry in "$@"; do
+        local label="${entry%%|*}"
+        local base="${entry#*|}"
+        local t
+        t=$(measure_latency "${base}${probe}")
+        printf "    %-10s %7ss  %s\n" "$label" "$t" "$base" >&2
+        if [ -z "$best_time" ] || awk "BEGIN{exit !($t < $best_time)}"; then
+            best_time="$t"; best_base="$base"
+        fi
+    done
+    printf "%s\n" "$best_base"
+}
+
 # --- Check prerequisites ---
 echo -e "\n${YELLOW}Checking prerequisites...${NC}"
 ensure_tool curl
@@ -109,6 +136,32 @@ is_native_linux_node() {
     esac
 }
 
+# --- Select fastest mirrors (China-friendly) ---
+echo -e "\n${YELLOW}Selecting fastest mirror (testing latency)...${NC}"
+
+if [ -n "$ERII_NODE_MIRROR" ]; then
+    NODE_DIST_BASE="$ERII_NODE_MIRROR"
+    echo -e "  ${GREEN}✓${NC} Node.js source from \$ERII_NODE_MIRROR: $NODE_DIST_BASE"
+else
+    echo -e "  ${BLUE}Node.js mirrors:${NC}"
+    NODE_DIST_BASE=$(select_fastest "/index.json" \
+        "npmmirror|https://cdn.npmmirror.com/binaries/node" \
+        "tuna|https://mirrors.tuna.tsinghua.edu.cn/nodejs-release" \
+        "official|https://nodejs.org/dist")
+    echo -e "  ${GREEN}✓${NC} Node.js source: $NODE_DIST_BASE"
+fi
+
+if [ -n "$ERII_NPM_REGISTRY" ]; then
+    NPM_REGISTRY="$ERII_NPM_REGISTRY"
+    echo -e "  ${GREEN}✓${NC} npm registry from \$ERII_NPM_REGISTRY: $NPM_REGISTRY"
+else
+    echo -e "  ${BLUE}npm registries:${NC}"
+    NPM_REGISTRY=$(select_fastest "/" \
+        "npmmirror|https://registry.npmmirror.com" \
+        "official|https://registry.npmjs.org")
+    echo -e "  ${GREEN}✓${NC} npm registry: $NPM_REGISTRY"
+fi
+
 # --- Install Node.js ---
 echo -e "\n${YELLOW}[1/3] Installing Node.js LTS...${NC}"
 
@@ -124,8 +177,21 @@ if command -v node &> /dev/null; then
 fi
 
 if ! command -v node &> /dev/null || [ "$NEED_NODE_INSTALL" = true ]; then
-    # Resolve latest LTS version from redirect URL
-    NODE_VERSION=$(curl -s -o /dev/null -w '%{url_effective}' -L https://nodejs.org/dist/latest-lts/ | sed 's|.*/v||;s|/||')
+    # Resolve latest LTS version from the selected mirror's index.json.
+    # index.json is newest-first; LTS releases carry "lts":"<name>", others "lts":false.
+    NODE_VERSION=$(curl -fsSL -m 15 "${NODE_DIST_BASE}/index.json" 2>/dev/null \
+        | tr '}' '\n' \
+        | grep '"lts":"' \
+        | head -1 \
+        | sed -E 's/.*"version":"v([^"]+)".*/\1/')
+    # Fallback to the official latest-lts redirect if parsing failed
+    if [ -z "$NODE_VERSION" ]; then
+        NODE_VERSION=$(curl -s -o /dev/null -w '%{url_effective}' -L https://nodejs.org/dist/latest-lts/ | sed 's|.*/v||;s|/||')
+    fi
+    if [ -z "$NODE_VERSION" ]; then
+        echo -e "${RED}Failed to resolve Node.js LTS version${NC}"
+        exit 1
+    fi
 
     if [ "$OS" = "darwin" ]; then
         TARBALL="node-v${NODE_VERSION}-darwin-${ARCH}.tar.gz"
@@ -136,7 +202,7 @@ if ! command -v node &> /dev/null || [ "$NEED_NODE_INSTALL" = true ]; then
     fi
 
     echo -e "  Downloading Node.js v${NODE_VERSION} for ${OS}-${ARCH}..."
-    curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/${TARBALL}" -o "/tmp/${TARBALL}"
+    curl -fsSL "${NODE_DIST_BASE}/v${NODE_VERSION}/${TARBALL}" -o "/tmp/${TARBALL}"
 
     echo -e "  Installing to /usr/local..."
     $(maybe_sudo) $DECOMPRESS "/tmp/${TARBALL}" -C /usr/local --strip-components=1
@@ -156,7 +222,7 @@ echo -e "  ${GREEN}✓${NC} npm $(npm -v)"
 
 # --- Install Erii ---
 echo -e "\n${YELLOW}[2/3] Installing @spcookie/erii globally...${NC}"
-npm install -g @spcookie/erii
+npm install -g @spcookie/erii --registry "$NPM_REGISTRY"
 
 echo -e "  ${GREEN}✓${NC} @spcookie/erii installed"
 
