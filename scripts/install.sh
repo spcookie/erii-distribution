@@ -222,7 +222,7 @@ echo -e "  ${GREEN}✓${NC} npm $(npm -v)"
 
 # --- Install Erii ---
 echo -e "\n${YELLOW}[2/3] Installing @spcookie/erii globally...${NC}"
-npm install -g @spcookie/erii --registry "$NPM_REGISTRY"
+npm install -g @spcookie/erii --registry "$NPM_REGISTRY" --loglevel=http
 
 echo -e "  ${GREEN}✓${NC} @spcookie/erii installed"
 

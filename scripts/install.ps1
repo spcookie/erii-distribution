@@ -188,7 +188,7 @@ Write-Ok "npm $NpmVer"
 
 # --- Install Erii ---
 Write-Step "[2/3] Installing @spcookie/erii globally..."
-& npm install -g @spcookie/erii --registry $NpmRegistry
+& npm install -g @spcookie/erii --registry $NpmRegistry --loglevel=http
 Write-Ok "@spcookie/erii installed"
 
 # --- Run Setup ---
