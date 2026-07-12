@@ -8,7 +8,7 @@
     "packages/erii-cli/*/*",
     "packages/erii-config",
     "packages/erii-core",
-    "packages/erii-deps",
+    "packages/erii-deps/*",
     "packages/erii-plugins/*",
     "packages/erii-runtime/*/*",
     "packages/erii-setup"

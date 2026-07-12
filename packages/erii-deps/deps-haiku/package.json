@@ -1,6 +1,7 @@
 {
-  "name": "@spcookie/erii-deps",
-  "version": "1.3.3",
+  "name": "@spcookie/deps-haiku",
+  "version": "1.0.0",
+  "description": "Erii runtime JVM dependencies (split part: haiku)",
   "scripts": {
     "postinstall": "node postinstall.js"
   },
@@ -11,12 +12,10 @@
   ],
   "author": "spcookie",
   "license": "MIT",
-  "description": "",
-  "dependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/spcookie/erii.git",
-    "directory": "erii-distribution/packages/erii-deps"
+    "directory": "erii-distribution/packages/erii-deps/deps-haiku"
   },
   "bugs": {
     "url": "https://github.com/spcookie/erii/issues"

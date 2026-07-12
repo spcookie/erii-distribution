@@ -3,7 +3,12 @@ const path = require('path');
 
 const isWindows = process.platform === 'win32';
 
-// Detect install layout (mirrors erii/postinstall.js logic)
+// Target subdir name is derived from this package's own name:
+// @spcookie/deps-haiku -> haiku  (jars land in <root>/lib/deps/haiku)
+const pkgName = require('./package.json').name;
+const depName = pkgName.replace(/^@spcookie\/deps-/, '');
+
+// Detect install layout (mirrors erii-core/postinstall.js logic)
 const spcookieFlat = path.resolve(__dirname, '..');
 const spcookieNested = path.join(__dirname, 'node_modules', '@spcookie');
 const nestedExists = fs.existsSync(spcookieNested);
@@ -65,31 +70,17 @@ function createDirLink(target, linkPath) {
 function main() {
     const srcLib = path.join(__dirname, 'lib');
     if (!fs.existsSync(srcLib)) {
-        console.log('  [WARN] erii-core lib source missing');
+        console.log(`  [WARN] ${pkgName} lib source missing`);
         return;
     }
 
-    const libRoot = path.join(linkRoot, 'lib');
-    fs.mkdirSync(libRoot, {recursive: true});
+    const depsRoot = path.join(linkRoot, 'lib', 'deps');
+    fs.mkdirSync(depsRoot, {recursive: true});
 
-    const dstDir = path.join(libRoot, 'core');
+    const dstDir = path.join(depsRoot, depName);
     const r = createDirLink(srcLib, dstDir);
     const icon = r === 'created' ? '✓' : '○';
-    console.log(`  ${icon} lib/core`);
-
-    linkOpts();
-}
-
-function linkOpts() {
-    const srcOpts = path.join(__dirname, 'opts');
-    if (!fs.existsSync(srcOpts)) {
-        console.log('  [WARN] erii-core opts source missing');
-        return;
-    }
-    const dstDir = path.join(linkRoot, 'opts');
-    const r = createDirLink(srcOpts, dstDir);
-    const icon = r === 'created' ? '✓' : '○';
-    console.log(`  ${icon} opts`);
+    console.log(`  ${icon} lib/deps/${depName}`);
 }
 
 main();
