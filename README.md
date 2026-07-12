@@ -31,8 +31,6 @@ npx erii server
 Each plugin is a standalone npm package under `@spcookie/erii-plugin-*`. Installed plugins are symlinked into `plugins/`
 at postinstall — they are extracted from `.zip` and linked as directories.
 
-Available plugins: `animal`, `speech`, `rollpig`, `lolisuki`, `net-ease-music`, `qq-face`, `seeddream`.
-
 To create a new plugin package:
 
 ```bash
@@ -60,7 +58,7 @@ The `erii server` command (in `cli.js`) starts Java with:
 ## Requirements
 
 - Node.js >= 18
-- Java 21+ (bundled JDK provided via `erii-runtime-*`, or set `JAVA_HOME`)
+- Java 17+ (bundled JDK provided via `erii-runtime-*`, or set `JAVA_HOME`)
 
 ## License
 
