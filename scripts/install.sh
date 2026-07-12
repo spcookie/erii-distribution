@@ -116,10 +116,10 @@ fi
 # --- Detect WSL ---
 is_wsl() {
     # WSL2: uname -r contains "microsoft" or "WSL"
-    # WSL1: /proc/sys/kernel/osrelease exists on Linux kernel
+    # WSL1: /proc/sys/kernel/osrelease contains "microsoft" or "WSL"
     if [ "$OS" = "linux" ]; then
         uname -r | grep -qi "microsoft\|WSL" && return 0
-        [ -f /proc/sys/kernel/osrelease ] && return 0
+        [ -f /proc/sys/kernel/osrelease ] && grep -qi "microsoft\|WSL" /proc/sys/kernel/osrelease && return 0
     fi
     return 1
 }
@@ -234,7 +234,7 @@ echo -e "\n${GREEN}========================================${NC}"
 echo -e "${GREEN}     Setup Complete!                    ${NC}"
 echo -e "${GREEN}========================================${NC}"
 echo -e "\nStart the server with:"
-echo -e "  ${YELLOW}erii server${NC}"
+echo -e "  ${YELLOW}erii server start${NC}"
 
 if is_wsl; then
     echo -e "\n${YELLOW}WSL Notice:${NC} To ensure Linux Node.js is always used, add this to your ~/.bashrc or ~/.zshrc:"
