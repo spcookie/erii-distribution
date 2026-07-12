@@ -1,6 +1,6 @@
 {
   "name": "@spcookie/deps-fable",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Erii runtime JVM dependencies (split part: fable)",
   "scripts": {
     "postinstall": "node postinstall.js"

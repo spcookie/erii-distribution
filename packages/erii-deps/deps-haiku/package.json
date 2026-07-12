@@ -1,6 +1,6 @@
 {
   "name": "@spcookie/deps-haiku",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Erii runtime JVM dependencies (split part: haiku)",
   "scripts": {
     "postinstall": "node postinstall.js"
