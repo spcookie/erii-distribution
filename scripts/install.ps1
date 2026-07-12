@@ -147,7 +147,13 @@ if (Get-Command node -ErrorAction SilentlyContinue) {
 
     try {
         Write-Info "Downloading Node.js v$NodeVersion for win-$Arch..."
-        Invoke-WebRequest -Uri $MsiUrl -OutFile $MsiPath -UseBasicParsing
+        # Prefer BITS (native progress bar, resumable, fast); fall back to Invoke-WebRequest
+        try {
+            Import-Module BitsTransfer -ErrorAction Stop
+            Start-BitsTransfer -Source $MsiUrl -Destination $MsiPath -Description "Node.js v$NodeVersion" -ErrorAction Stop
+        } catch {
+            Invoke-WebRequest -Uri $MsiUrl -OutFile $MsiPath -UseBasicParsing
+        }
     } catch {
         Write-Err "Failed to download Node.js from: $MsiUrl"
         if (Test-Path $MsiPath) { Remove-Item $MsiPath }

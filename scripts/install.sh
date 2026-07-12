@@ -202,7 +202,7 @@ if ! command -v node &> /dev/null || [ "$NEED_NODE_INSTALL" = true ]; then
     fi
 
     echo -e "  Downloading Node.js v${NODE_VERSION} for ${OS}-${ARCH}..."
-    curl -fsSL "${NODE_DIST_BASE}/v${NODE_VERSION}/${TARBALL}" -o "/tmp/${TARBALL}"
+    curl -fL --progress-bar "${NODE_DIST_BASE}/v${NODE_VERSION}/${TARBALL}" -o "/tmp/${TARBALL}"
 
     echo -e "  Installing to /usr/local..."
     $(maybe_sudo) $DECOMPRESS "/tmp/${TARBALL}" -C /usr/local --strip-components=1
