@@ -38,6 +38,26 @@ function Write-Info {
     Write-Host "  $Msg" -ForegroundColor Cyan
 }
 
+function Resolve-CmdShim {
+    param([string]$Name)
+
+    foreach ($candidate in @("$Name.cmd", "$Name.exe")) {
+        $cmd = Get-Command $candidate -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
+        if ($cmd) {
+            return $cmd.Source
+        }
+    }
+
+    $cmd = Get-Command $Name -CommandType Application -ErrorAction SilentlyContinue |
+        Where-Object { $_.Source -notlike "*.ps1" } |
+        Select-Object -First 1
+    if ($cmd) {
+        return $cmd.Source
+    }
+
+    return $null
+}
+
 # Measure latency to a URL (seconds). Returns 999 on failure.
 # Tries HEAD first, falls back to a ranged GET for servers that reject HEAD.
 function Measure-Latency {
@@ -182,18 +202,30 @@ if (Get-Command node -ErrorAction SilentlyContinue) {
 }
 
 $NodeVer = & node -v
-$NpmVer = & npm -v
+$NpmCmd = Resolve-CmdShim "npm"
+if (-not $NpmCmd) {
+    Write-Err "npm command not found. Please restart your terminal and run the installer again."
+    exit 1
+}
+
+$NpmVer = & $NpmCmd -v
 Write-Ok "Node.js $NodeVer"
 Write-Ok "npm $NpmVer"
 
 # --- Install Erii ---
 Write-Step "[2/3] Installing @spcookie/erii globally..."
-& npm install -g @spcookie/erii --registry $NpmRegistry --loglevel=http
+& $NpmCmd install -g @spcookie/erii --registry $NpmRegistry --loglevel=http
 Write-Ok "@spcookie/erii installed"
 
 # --- Run Setup ---
 Write-Step "[3/3] Running erii setup..."
-& erii setup
+$EriiCmd = Resolve-CmdShim "erii"
+if (-not $EriiCmd) {
+    Write-Err "erii command not found after installation. Please restart your terminal and run 'erii setup'."
+    exit 1
+}
+
+& $EriiCmd setup
 
 Write-Host "`n========================================" -ForegroundColor Green
 Write-Host "     Setup Complete!                    " -ForegroundColor Green
