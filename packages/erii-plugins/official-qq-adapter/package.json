@@ -1,7 +1,7 @@
 {
-  "name": "@spcookie/erii-plugin-chat-heatmap",
-  "version": "1.0.10",
-  "description": "Erii Chat Heatmap plugin",
+  "name": "@spcookie/erii-plugin-official-qq-adapter",
+  "version": "1.0.0",
+  "description": "Erii Official QQ Adapter plugin",
   "scripts": {
     "postinstall": "node postinstall.js"
   },
@@ -17,7 +17,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/spcookie/erii.git",
-    "directory": "erii-distribution/packages/erii-plugins/chat-heatmap"
+    "directory": "erii-distribution/packages/erii-plugins/official-qq-adapter"
   },
   "bugs": {
     "url": "https://github.com/spcookie/erii/issues"
@@ -29,7 +29,7 @@
   "keywords": [
     "erii",
     "plugin",
-    "chat",
-    "heatmap"
+    "seeddream",
+    "image-generation"
   ]
 }
