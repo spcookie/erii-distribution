@@ -227,8 +227,29 @@ npm install -g @spcookie/erii --registry "$NPM_REGISTRY" --loglevel=http
 echo -e "  ${GREEN}✓${NC} @spcookie/erii installed"
 
 # --- Run Setup ---
-echo -e "\n${YELLOW}[3/3] Running erii setup...${NC}"
-erii setup
+if [ "$OS" = "darwin" ]; then
+    echo -e "\n${YELLOW}[3/3] Opening Erii Web Setup...${NC}"
+    SETUP_TOKEN=$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 12)
+    PROBE_URL="http://localhost:9527/?token=${SETUP_TOKEN}"
+    SETUP_URL="http://localhost:9527/?token=${SETUP_TOKEN}&cmd=setup"
+
+    echo -e "  ${BLUE}Opening Web Setup:${NC} $SETUP_URL"
+    echo -e "  ${BLUE}When setup is complete, press Ctrl+C here to stop the web console.${NC}"
+    (
+        for _ in $(seq 1 60); do
+            if curl -fsS --max-time 1 "$PROBE_URL" >/dev/null 2>&1; then
+                open "$SETUP_URL"
+                exit 0
+            fi
+            sleep 0.5
+        done
+        open "$SETUP_URL"
+    ) >/dev/null 2>&1 &
+    erii web --host 127.0.0.1 --port 9527 --token "$SETUP_TOKEN"
+else
+    echo -e "\n${YELLOW}[3/3] Running erii setup...${NC}"
+    erii setup
+fi
 
 echo -e "\n${GREEN}========================================${NC}"
 echo -e "${GREEN}     Setup Complete!                    ${NC}"

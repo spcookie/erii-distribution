@@ -217,18 +217,38 @@ Write-Step "[2/3] Installing @spcookie/erii globally..."
 & $NpmCmd install -g @spcookie/erii --registry $NpmRegistry --loglevel=http
 Write-Ok "@spcookie/erii installed"
 
-# --- Run Setup ---
-Write-Step "[3/3] Running erii setup..."
+# --- Open Web Setup ---
+Write-Step "[3/3] Opening Erii Web Setup..."
 $EriiCmd = Resolve-CmdShim "erii"
 if (-not $EriiCmd) {
-    Write-Err "erii command not found after installation. Please restart your terminal and run 'erii setup'."
+    Write-Err "erii command not found after installation. Please restart your terminal and run 'erii web'."
     exit 1
 }
 
-& $EriiCmd setup
+$SetupToken = [System.Guid]::NewGuid().ToString("N").Substring(0, 12)
+$ProbeUrl = "http://localhost:9527/?token=$SetupToken"
+$SetupUrl = "http://localhost:9527/?token=$SetupToken&cmd=setup"
+
+Write-Info "Opening Web Setup: $SetupUrl"
+Write-Info "When setup is complete, press Ctrl+C here to stop the web console."
+Start-Job -ScriptBlock {
+    param([string]$ProbeUrl, [string]$SetupUrl)
+    for ($i = 0; $i -lt 60; $i++) {
+        try {
+            Invoke-WebRequest -Uri $ProbeUrl -UseBasicParsing -TimeoutSec 1 | Out-Null
+            Start-Process $SetupUrl
+            return
+        } catch {
+            Start-Sleep -Milliseconds 500
+        }
+    }
+    Start-Process $SetupUrl
+} -ArgumentList $ProbeUrl, $SetupUrl | Out-Null
+
+& $EriiCmd web --host 127.0.0.1 --port 9527 --token $SetupToken
 
 Write-Host "`n========================================" -ForegroundColor Green
 Write-Host "     Setup Complete!                    " -ForegroundColor Green
 Write-Host "========================================" -ForegroundColor Green
 Write-Host "`nStart the server with:" -ForegroundColor White
-Write-Host "  erii server" -ForegroundColor Yellow
+Write-Host "  erii server start" -ForegroundColor Yellow
