@@ -17,16 +17,72 @@
     {
       "name": "DeepSeek",
       "key": "deepseek",
-      "api": "openai",
-      "desc": "DeepSeek OpenAI-compatible models",
-      "base-url": "https://api.deepseek.com"
+      "api": "anthropic",
+      "desc": "DeepSeek Anthropic-compatible models",
+      "base-url": "https://api.deepseek.com/anthropic"
     },
     {
-      "name": "SiliconFlow",
-      "key": "siliconflow",
-      "api": "openai",
-      "desc": "SiliconFlow OpenAI-compatible models",
-      "base-url": "https://api.siliconflow.cn/v1"
+      "name": "Kimi",
+      "key": "kimi",
+      "api": "anthropic",
+      "desc": "Moonshot Kimi Anthropic-compatible models",
+      "base-url": "https://api.moonshot.ai/anthropic"
+    },
+    {
+      "name": "Kimi Code",
+      "key": "kimi-code",
+      "api": "anthropic",
+      "desc": "Moonshot Kimi Code Anthropic-compatible preset",
+      "base-url": "https://api.moonshot.ai/anthropic"
+    },
+    {
+      "name": "Xiaomi MiMo",
+      "key": "mimo",
+      "api": "anthropic",
+      "desc": "Xiaomi MiMo Anthropic-compatible models",
+      "base-url": "https://api.xiaomimimo.com/anthropic"
+    },
+    {
+      "name": "Xiaomi MiMo Token Plan",
+      "key": "mimo-token-plan",
+      "api": "anthropic",
+      "desc": "Xiaomi MiMo Token Plan Anthropic-compatible models",
+      "base-url": "https://token-plan-cn.xiaomimimo.com/anthropic"
+    },
+    {
+      "name": "MiniMax",
+      "key": "minimax",
+      "api": "anthropic",
+      "desc": "MiniMax Anthropic-compatible models",
+      "base-url": "https://api.minimax.io/anthropic"
+    },
+    {
+      "name": "MiniMax Token Plan",
+      "key": "minimax-token-plan",
+      "api": "anthropic",
+      "desc": "MiniMax Token Plan Anthropic-compatible models",
+      "base-url": "https://api.minimax.io/anthropic"
+    },
+    {
+      "name": "GLM",
+      "key": "glm",
+      "api": "anthropic",
+      "desc": "Z.AI GLM Anthropic-compatible models",
+      "base-url": "https://api.z.ai/api/anthropic"
+    },
+    {
+      "name": "Qwen",
+      "key": "qwen",
+      "api": "anthropic",
+      "desc": "Alibaba Cloud Model Studio Qwen Anthropic-compatible models",
+      "base-url": "https://dashscope.aliyuncs.com/apps/anthropic"
+    },
+    {
+      "name": "ByteDance Seed",
+      "key": "bytedance-seed",
+      "api": "anthropic",
+      "desc": "Volcengine Ark Doubao Seed Anthropic-compatible models",
+      "base-url": "https://ark.cn-beijing.volces.com/api/compatible"
     }
   ],
   "defaults": {
@@ -59,29 +115,121 @@
       },
       "deepseek": {
         "model-mode": "separate",
-        "lite-model": "deepseek-chat",
-        "flash-model": "deepseek-chat",
-        "pro-model": "deepseek-reasoner",
-        "all-model": "deepseek-chat",
+        "lite-model": "deepseek-v4-flash",
+        "flash-model": "deepseek-v4-flash",
+        "pro-model": "deepseek-v4-pro",
+        "all-model": "deepseek-v4-flash",
         "settings": {
-          "chat-completions": "v1/chat/completions",
-          "responses-api": "v1/responses",
-          "embeddings": "v1/embeddings",
-          "moderations": "v1/moderations",
+          "api-version": "2023-06-01",
+          "messages": "v1/messages",
           "models": "v1/models"
         }
       },
-      "siliconflow": {
+      "kimi": {
         "model-mode": "separate",
-        "lite-model": "Qwen/Qwen3-8B",
-        "flash-model": "Qwen/Qwen3-32B",
-        "pro-model": "deepseek-ai/DeepSeek-V3",
-        "all-model": "Qwen/Qwen3-32B",
+        "lite-model": "kimi-k2.6",
+        "flash-model": "kimi-k2.7-code-highspeed",
+        "pro-model": "kimi-k3",
+        "all-model": "kimi-k3",
         "settings": {
-          "chat-completions": "v1/chat/completions",
-          "responses-api": "v1/responses",
-          "embeddings": "v1/embeddings",
-          "moderations": "v1/moderations",
+          "api-version": "2023-06-01",
+          "messages": "v1/messages",
+          "models": "v1/models"
+        }
+      },
+      "kimi-code": {
+        "model-mode": "all",
+        "lite-model": "kimi-k2.7-code-highspeed",
+        "flash-model": "kimi-k2.7-code-highspeed",
+        "pro-model": "kimi-k2.7-code-highspeed",
+        "all-model": "kimi-k2.7-code-highspeed",
+        "settings": {
+          "api-version": "2023-06-01",
+          "messages": "v1/messages",
+          "models": "v1/models"
+        }
+      },
+      "mimo": {
+        "model-mode": "separate",
+        "lite-model": "mimo-v2.5",
+        "flash-model": "mimo-v2.5",
+        "pro-model": "mimo-v2.5-pro",
+        "all-model": "mimo-v2.5-pro",
+        "settings": {
+          "api-version": "2023-06-01",
+          "messages": "v1/messages",
+          "models": "v1/models"
+        }
+      },
+      "mimo-token-plan": {
+        "model-mode": "separate",
+        "lite-model": "mimo-v2.5",
+        "flash-model": "mimo-v2.5",
+        "pro-model": "mimo-v2.5-pro",
+        "all-model": "mimo-v2.5-pro",
+        "settings": {
+          "api-version": "2023-06-01",
+          "messages": "v1/messages",
+          "models": "v1/models"
+        }
+      },
+      "minimax": {
+        "model-mode": "separate",
+        "lite-model": "MiniMax-M2.7-highspeed",
+        "flash-model": "MiniMax-M2.7",
+        "pro-model": "MiniMax-M3",
+        "all-model": "MiniMax-M3",
+        "settings": {
+          "api-version": "2023-06-01",
+          "messages": "v1/messages",
+          "models": "v1/models"
+        }
+      },
+      "minimax-token-plan": {
+        "model-mode": "all",
+        "lite-model": "MiniMax-M3",
+        "flash-model": "MiniMax-M3",
+        "pro-model": "MiniMax-M3",
+        "all-model": "MiniMax-M3",
+        "settings": {
+          "api-version": "2023-06-01",
+          "messages": "v1/messages",
+          "models": "v1/models"
+        }
+      },
+      "glm": {
+        "model-mode": "separate",
+        "lite-model": "glm-5.2",
+        "flash-model": "glm-5.2",
+        "pro-model": "glm-5.2",
+        "all-model": "glm-5.2",
+        "settings": {
+          "api-version": "2023-06-01",
+          "messages": "v1/messages",
+          "models": "v1/models"
+        }
+      },
+      "qwen": {
+        "model-mode": "separate",
+        "lite-model": "qwen3.6-flash",
+        "flash-model": "qwen3.7-plus",
+        "pro-model": "qwen3.7-max",
+        "all-model": "qwen3.7-plus",
+        "settings": {
+          "api-version": "2023-06-01",
+          "messages": "v1/messages",
+          "models": "v1/models"
+        }
+      },
+      "bytedance-seed": {
+        "model-mode": "separate",
+        "lite-model": "doubao-seed-2-1-turbo-260628",
+        "flash-model": "doubao-seed-2-1-turbo-260628",
+        "pro-model": "doubao-seed-2-1-pro-260628",
+        "all-model": "doubao-seed-2-1-pro-260628",
+        "settings": {
+          "api-version": "2023-06-01",
+          "messages": "v1/messages",
           "models": "v1/models"
         }
       }
