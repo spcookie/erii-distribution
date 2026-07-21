@@ -245,7 +245,7 @@ if [ "$OS" = "darwin" ]; then
         done
         open "$SETUP_URL"
     ) >/dev/null 2>&1 &
-    erii web --host 127.0.0.1 --port 9527 --token "$SETUP_TOKEN"
+    erii web start --host 127.0.0.1 --port 9527 --token "$SETUP_TOKEN"
 else
     echo -e "\n${YELLOW}[3/3] Running erii setup...${NC}"
     erii setup

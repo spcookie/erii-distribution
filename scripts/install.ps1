@@ -245,7 +245,7 @@ Start-Job -ScriptBlock {
     Start-Process $SetupUrl
 } -ArgumentList $ProbeUrl, $SetupUrl | Out-Null
 
-& $EriiCmd web --host 127.0.0.1 --port 9527 --token $SetupToken
+& $EriiCmd web start --host 127.0.0.1 --port 9527 --token $SetupToken
 
 Write-Host "`n========================================" -ForegroundColor Green
 Write-Host "     Setup Complete!                    " -ForegroundColor Green
