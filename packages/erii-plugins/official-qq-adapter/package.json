@@ -1,6 +1,6 @@
 {
   "name": "@spcookie/erii-plugin-official-qq-adapter",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Erii Official QQ Adapter plugin",
   "scripts": {
     "postinstall": "node postinstall.js"
