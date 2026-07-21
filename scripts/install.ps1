@@ -225,11 +225,24 @@ if (-not $EriiCmd) {
     exit 1
 }
 
+# Find free port starting from 9527
+$WebPort = 9527
+for ($p = 9527; $p -le 9536; $p++) {
+    $inUse = Get-NetTCPConnection -LocalPort $p -ErrorAction SilentlyContinue
+    if (-not $inUse) {
+        $WebPort = $p
+        break
+    }
+}
+
 $SetupToken = [System.Guid]::NewGuid().ToString("N").Substring(0, 12)
-$ProbeUrl = "http://localhost:9527/?token=$SetupToken"
-$SetupUrl = "http://localhost:9527/?token=$SetupToken&cmd=setup"
+$ProbeUrl = "http://localhost:${WebPort}/?token=$SetupToken"
+$SetupUrl = "http://localhost:${WebPort}/?token=$SetupToken&cmd=setup"
 
 Write-Info "Opening Web Setup: $SetupUrl"
+if ($WebPort -ne 9527) {
+    Write-Warn "Port 9527 in use, using port $WebPort"
+}
 Write-Info "When setup is complete, press Ctrl+C here to stop the web console."
 Start-Job -ScriptBlock {
     param([string]$ProbeUrl, [string]$SetupUrl)
@@ -245,7 +258,7 @@ Start-Job -ScriptBlock {
     Start-Process $SetupUrl
 } -ArgumentList $ProbeUrl, $SetupUrl | Out-Null
 
-& $EriiCmd web start --host 127.0.0.1 --port 9527 --token $SetupToken
+& $EriiCmd web start --host 127.0.0.1 --port $WebPort --token $SetupToken
 
 Write-Host "`n========================================" -ForegroundColor Green
 Write-Host "     Setup Complete!                    " -ForegroundColor Green

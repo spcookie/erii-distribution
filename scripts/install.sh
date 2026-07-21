@@ -229,11 +229,21 @@ echo -e "  ${GREEN}✓${NC} @spcookie/erii installed"
 # --- Run Setup ---
 if [ "$OS" = "darwin" ]; then
     echo -e "\n${YELLOW}[3/3] Opening Erii Web Setup...${NC}"
+    WEB_PORT=9527
+    for p in $(seq 9527 9536); do
+        if ! lsof -i :$p -sTCP:LISTEN >/dev/null 2>&1; then
+            WEB_PORT=$p
+            break
+        fi
+    done
     SETUP_TOKEN=$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 12)
-    PROBE_URL="http://localhost:9527/?token=${SETUP_TOKEN}"
-    SETUP_URL="http://localhost:9527/?token=${SETUP_TOKEN}&cmd=setup"
+    PROBE_URL="http://localhost:${WEB_PORT}/?token=${SETUP_TOKEN}"
+    SETUP_URL="http://localhost:${WEB_PORT}/?token=${SETUP_TOKEN}&cmd=setup"
 
     echo -e "  ${BLUE}Opening Web Setup:${NC} $SETUP_URL"
+    if [ "$WEB_PORT" != "9527" ]; then
+        echo -e "  ${YELLOW}Port 9527 in use, using port ${WEB_PORT}${NC}"
+    fi
     echo -e "  ${BLUE}When setup is complete, press Ctrl+C here to stop the web console.${NC}"
     (
         for _ in $(seq 1 60); do
@@ -245,7 +255,7 @@ if [ "$OS" = "darwin" ]; then
         done
         open "$SETUP_URL"
     ) >/dev/null 2>&1 &
-    erii web start --host 127.0.0.1 --port 9527 --token "$SETUP_TOKEN"
+    erii web start --host 127.0.0.1 --port ${WEB_PORT} --token "$SETUP_TOKEN"
 else
     echo -e "\n${YELLOW}[3/3] Running erii setup...${NC}"
     erii setup
