@@ -1,6 +1,6 @@
 {
   "name": "@spcookie/erii-core",
-  "version": "1.4.15",
+  "version": "1.4.16",
   "scripts": {
     "postinstall": "node postinstall.js"
   },
