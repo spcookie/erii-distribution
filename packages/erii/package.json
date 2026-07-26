@@ -1,19 +1,19 @@
 {
   "name": "@spcookie/erii",
-  "version": "1.3.36",
+  "version": "1.3.37",
   "description": "Erii distribution - all platforms",
   "bin": {
     "erii": "cli.js"
   },
   "optionalDependencies": {
-    "@spcookie/erii-cli-darwin-amd64": "1.3.28",
-    "@spcookie/erii-cli-darwin-arm64": "1.3.28",
-    "@spcookie/erii-cli-linux-386": "1.3.28",
-    "@spcookie/erii-cli-linux-amd64": "1.3.28",
-    "@spcookie/erii-cli-linux-arm64": "1.3.28",
-    "@spcookie/erii-cli-windows-386": "1.3.28",
-    "@spcookie/erii-cli-windows-amd64": "1.3.28",
-    "@spcookie/erii-cli-windows-arm64": "1.3.28",
+    "@spcookie/erii-cli-darwin-amd64": "1.3.29",
+    "@spcookie/erii-cli-darwin-arm64": "1.3.29",
+    "@spcookie/erii-cli-linux-386": "1.3.29",
+    "@spcookie/erii-cli-linux-amd64": "1.3.29",
+    "@spcookie/erii-cli-linux-arm64": "1.3.29",
+    "@spcookie/erii-cli-windows-386": "1.3.29",
+    "@spcookie/erii-cli-windows-amd64": "1.3.29",
+    "@spcookie/erii-cli-windows-arm64": "1.3.29",
     "@spcookie/erii-runtime-darwin-aarch64": "1.0.0",
     "@spcookie/erii-runtime-darwin-x64": "1.0.0",
     "@spcookie/erii-runtime-linux-aarch64": "1.0.0",
