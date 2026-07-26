@@ -1,19 +1,19 @@
 {
   "name": "@spcookie/erii",
-  "version": "1.3.39",
+  "version": "1.3.40",
   "description": "Erii distribution - all platforms",
   "bin": {
     "erii": "cli.js"
   },
   "optionalDependencies": {
-    "@spcookie/erii-cli-darwin-amd64": "1.3.31",
-    "@spcookie/erii-cli-darwin-arm64": "1.3.31",
-    "@spcookie/erii-cli-linux-386": "1.3.31",
-    "@spcookie/erii-cli-linux-amd64": "1.3.31",
-    "@spcookie/erii-cli-linux-arm64": "1.3.31",
-    "@spcookie/erii-cli-windows-386": "1.3.31",
-    "@spcookie/erii-cli-windows-amd64": "1.3.31",
-    "@spcookie/erii-cli-windows-arm64": "1.3.31",
+    "@spcookie/erii-cli-darwin-amd64": "1.3.32",
+    "@spcookie/erii-cli-darwin-arm64": "1.3.32",
+    "@spcookie/erii-cli-linux-386": "1.3.32",
+    "@spcookie/erii-cli-linux-amd64": "1.3.32",
+    "@spcookie/erii-cli-linux-arm64": "1.3.32",
+    "@spcookie/erii-cli-windows-386": "1.3.32",
+    "@spcookie/erii-cli-windows-amd64": "1.3.32",
+    "@spcookie/erii-cli-windows-arm64": "1.3.32",
     "@spcookie/erii-runtime-darwin-aarch64": "1.0.0",
     "@spcookie/erii-runtime-darwin-x64": "1.0.0",
     "@spcookie/erii-runtime-linux-aarch64": "1.0.0",
@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@spcookie/erii-browser-driver-base": "1.0.3",
-    "@spcookie/erii-core": "1.4.24",
+    "@spcookie/erii-core": "1.4.25",
     "@spcookie/erii-config": "1.2.6",
     "@spcookie/deps-haiku": "1.0.1",
     "@spcookie/deps-sonnet": "1.0.1",
