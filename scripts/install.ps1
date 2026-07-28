@@ -214,7 +214,7 @@ Write-Ok "npm $NpmVer"
 
 # --- Install Erii ---
 Write-Step "[2/3] Installing @spcookie/erii globally..."
-& $NpmCmd install -g @spcookie/erii --registry $NpmRegistry --loglevel=http
+& $NpmCmd install -g @spcookie/erii --registry $NpmRegistry
 Write-Ok "@spcookie/erii installed"
 
 # --- Open Web Setup ---
