@@ -1,6 +1,6 @@
 {
   "name": "@spcookie/deps-opus",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Erii runtime JVM dependencies (split part: opus)",
   "scripts": {
     "postinstall": "node postinstall.js"
