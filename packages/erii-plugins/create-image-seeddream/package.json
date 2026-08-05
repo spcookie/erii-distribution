@@ -1,6 +1,6 @@
 {
   "name": "@spcookie/erii-plugin-create-image-seeddream",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Erii Seeddream plugin",
   "scripts": {
     "postinstall": "node postinstall.js"

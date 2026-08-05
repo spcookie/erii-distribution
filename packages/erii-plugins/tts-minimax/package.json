@@ -1,6 +1,6 @@
 {
   "name": "@spcookie/erii-plugin-tts-minimax",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Erii Tts Minimax plugin",
   "scripts": {
     "postinstall": "node postinstall.js"

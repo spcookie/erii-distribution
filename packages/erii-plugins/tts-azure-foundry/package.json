@@ -1,6 +1,6 @@
 {
   "name": "@spcookie/erii-plugin-tts-azure-foundry",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Erii TTS Azure Foundry plugin",
   "scripts": {
     "postinstall": "node postinstall.js"
